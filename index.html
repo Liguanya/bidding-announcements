@@ -141,7 +141,14 @@
             const dateStr = item.dateKey ? item.dateKey.slice(0,4) + '-' + item.dateKey.slice(4,6) + '-' + item.dateKey.slice(6,8) : '';
             let bodyHtml = '<div class="detail-section"><h4>📅 发布时间</h4><div class="detail-content">' + dateStr + '</div></div><div class="detail-section"><h4>🌐 来源</h4><div class="detail-content">' + (item.source || '未知') + '</div></div>';
             if (item.keywords.length > 0) bodyHtml += '<div class="detail-section"><h4>🏷️ 匹配关键词</h4><div class="detail-content">' + item.keywords.join(', ') + '</div></div>';
-            if (item.link && item.link.startsWith('http')) bodyHtml += '<div class="detail-section"><h4>🔗 公告链接</h4><div class="detail-content"><a href="' + item.link + '" target="_blank" class="detail-link">' + item.link + '</a></div></div>';
+            // 检查链接是否是有效的URL格式
+            const linkText = item.link || '';
+            const isValidUrl = linkText.startsWith('http://') || linkText.startsWith('https://');
+            if (isValidUrl) {
+                bodyHtml += '<div class="detail-section"><h4>🔗 公告链接</h4><div class="detail-content"><a href="' + linkText + '" target="_blank" class="detail-link">🔗 点击查看公告原文</a></div></div>';
+            } else if (linkText) {
+                bodyHtml += '<div class="detail-section"><h4>📌 来源说明</h4><div class="detail-content">' + linkText + '</div></div>';
+            }
             document.getElementById('modalTitle').textContent = item.title;
             document.getElementById('modalBody').innerHTML = bodyHtml;
             document.getElementById('modalOverlay').classList.add('active');
