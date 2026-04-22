@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📢 招标公告推送平台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { background: white; border-radius: 16px; padding: 30px; margin-bottom: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .header h1 { color: #333; font-size: 28px; margin-bottom: 8px; }
+        .header-subtitle { color: #666; font-size: 14px; margin-bottom: 16px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
+        .stat-card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 12px; text-align: center; }
+        .stat-card.green { background: linear-gradient(135deg, #43a047, #2e7d32); }
+        .stat-card.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
+        .stat-value { font-size: 2rem; font-weight: bold; }
+        .filters { background: white; border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .filter-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+        .filter-group { display: flex; align-items: center; gap: 8px; }
+        .filter-group label { color: #666; font-size: 14px; }
+        .filter-group select { padding: 10px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; min-width: 140px; }
+        .search-box { flex: 1; min-width: 200px; }
+        .search-box input { width: 100%; padding: 10px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+        .announcement-list { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .announcement-item { border: 1px solid #e8e8e8; border-radius: 12px; padding: 20px; margin-bottom: 16px; cursor: pointer; transition: all 0.3s; }
+        .announcement-item:hover { border-color: #667eea; box-shadow: 0 4px 20px rgba(102,126,234,0.15); transform: translateX(4px); }
+        .item-title { color: #333; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .item-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+        .meta-tag { padding: 4px 12px; border-radius: 20px; font-size: 12px; background: #f0f0f0; color: #666; }
+        .meta-tag.source { background: #e3f2fd; color: #1565c0; }
+        .meta-tag.keyword { background: #fff3e0; color: #e65100; }
+        .item-date { color: #999; font-size: 13px; }
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+        .pagination button { padding: 8px 16px; border: 1px solid #e0e0e0; background: white; border-radius: 8px; cursor: pointer; }
+        .pagination button.active { background: #667eea; color: white; border-color: #667eea; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .modal-title { font-size: 18px; color: #333; flex: 1; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+        .detail-section { margin-bottom: 16px; }
+        .detail-section h4 { color: #666; font-size: 14px; margin-bottom: 8px; }
+        .detail-content { color: #333; font-size: 14px; }
+        .detail-link { color: #1e88e5; text-decoration: none; word-break: break-all; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 24px; border-radius: 8px; display: none; z-index: 2000; }
+        .toast.show { display: block; }
+        @media (max-width: 768px) { .stats { grid-template-columns: repeat(2, 1fr); } .filter-row { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📢 招标公告推送平台</h1>
+            <p class="header-subtitle">实时推送政府采购招标公告，助您把握商机</p>
+            <div class="stats">
+                <div class="stat-card"><div class="stat-label">总公告数</div><div class="stat-value" id="totalCount">-</div></div>
+                <div class="stat-card green"><div class="stat-label">今日新增</div><div class="stat-value" id="todayCount">-</div></div>
+                <div class="stat-card orange"><div class="stat-label">天津地区</div><div class="stat-value" id="tjCount">-</div></div>
+                <div class="stat-card"><div class="stat-label">全国公告</div><div class="stat-value" id="nationCount">-</div></div>
+            </div>
+        </div>
+        <div class="filters">
+            <div class="filter-row">
+                <div class="filter-group"><label>日期</label><select id="filterDate"><option value="">全部日期</option></select></div>
+                <div class="filter-group"><label>关键词</label><select id="filterKeyword"><option value="">全部关键词</option><option value="造价">造价</option><option value="全过程咨询">全过程咨询</option><option value="招标代理">招标代理</option><option value="项目管理">项目管理</option></select></div>
+                <div class="filter-group"><label>来源</label><select id="filterSource"><option value="">全部来源</option><option value="中国政府采购网">中国政府采购网</option><option value="天津">天津</option></select></div>
+                <div class="search-box"><input type="text" id="searchInput" placeholder="🔍 搜索公告标题..."></div>
+                <button onclick="resetFilters()" style="padding:10px 20px;border:1px solid #e0e0e0;border-radius:8px;background:white;cursor:pointer;">🔄 重置</button>
+            </div>
+        </div>
+        <div class="announcement-list">
+            <h3 style="margin-bottom:20px;">📋 公告列表 <span id="resultCount"></span></h3>
+            <div id="announcementList"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header"><h2 class="modal-title" id="modalTitle"></h2><button class="modal-close" onclick="closeModal()">×</button></div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <script>
+        let allAnnouncements = [], filteredAnnouncements = [], currentPage = 1, pageSize = 15;
+        const FAVORITES_KEY = 'bidding_favorites';
+        function getFavorites() { return JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'); }
+        document.addEventListener('DOMContentLoaded', function() { loadData(); setupFilters(); document.getElementById('searchInput').addEventListener('input', handleSearch); });
+        function loadData() {
+            try {
+                const data = EMBEDDED_DATA;
+                allAnnouncements = (data.announcements || []).map(item => ({...item, dateKey: item.dateKey || (item.pubDate ? item.pubDate.replace(/-/g, '') : '')}));
+                filteredAnnouncements = [...allAnnouncements];
+                updateStats(); initFilterOptions(); renderAnnouncements();
+            } catch (error) { console.error('加载数据失败:', error); document.getElementById('announcementList').innerHTML = '<p style="text-align:center;color:#999;">数据加载失败</p>'; }
+        }
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+            document.getElementById('totalCount').textContent = allAnnouncements.length;
+            document.getElementById('todayCount').textContent = allAnnouncements.filter(a => a.dateKey === today).length;
+            document.getElementById('tjCount').textContent = allAnnouncements.filter(a => (a.source + a.link).includes('天津')).length;
+            document.getElementById('nationCount').textContent = allAnnouncements.length;
+        }
+        function initFilterOptions() {
+            const dateSelect = document.getElementById('filterDate');
+            [...new Set(allAnnouncements.map(a => a.dateKey))].filter(d => d).sort().reverse().forEach(date => {
+                const opt = document.createElement('option'); opt.value = date; opt.textContent = date.slice(0,4) + '-' + date.slice(4,6) + '-' + date.slice(6,8); dateSelect.appendChild(opt);
+            });
+        }
+        function setupFilters() { ['filterDate', 'filterKeyword', 'filterSource'].forEach(id => document.getElementById(id).addEventListener('change', applyFilters)); }
+        function applyFilters() {
+            const date = document.getElementById('filterDate').value, keyword = document.getElementById('filterKeyword').value, source = document.getElementById('filterSource').value, search = document.getElementById('searchInput').value.toLowerCase();
+            filteredAnnouncements = allAnnouncements.filter(item => {
+                if (date && item.dateKey !== date) return false;
+                if (keyword && !item.keywords.includes(keyword)) return false;
+                if (source && !(item.source + item.link).includes(source)) return false;
+                if (search && !item.title.toLowerCase().includes(search)) return false;
+                return true;
+            });
+            currentPage = 1; renderAnnouncements();
+        }
+        function handleSearch() { applyFilters(); }
+        function resetFilters() { document.getElementById('filterDate').value = ''; document.getElementById('filterKeyword').value = ''; document.getElementById('filterSource').value = ''; document.getElementById('searchInput').value = ''; filteredAnnouncements = [...allAnnouncements]; currentPage = 1; renderAnnouncements(); }
+        function renderAnnouncements() {
+            const list = document.getElementById('announcementList'), start = (currentPage - 1) * pageSize, end = start + pageSize, pageItems = filteredAnnouncements.slice(start, end);
+            document.getElementById('resultCount').textContent = '共 ' + filteredAnnouncements.length + ' 条公告';
+            if (pageItems.length === 0) { list.innerHTML = '<p style="text-align:center;color:#999;padding:40px;">暂无公告</p>'; document.getElementById('pagination').innerHTML = ''; return; }
+            list.innerHTML = pageItems.map(item => {
+                const dateStr = item.dateKey ? item.dateKey.slice(0,4) + '-' + item.dateKey.slice(4,6) + '-' + item.dateKey.slice(6,8) : '';
+                return '<div class="announcement-item" onclick="showDetail(' + item.id + ')"><div class="item-title">' + item.title + '</div><div class="item-meta">' + (item.source ? '<span class="meta-tag source">' + item.source + '</span>' : '') + item.keywords.map(k => '<span class="meta-tag keyword">' + k + '</span>').join('') + '</div><div class="item-date">📅 ' + dateStr + '</div></div>';
+            }).join('');
+            const totalPages = Math.ceil(filteredAnnouncements.length / pageSize), pagination = document.getElementById('pagination');
+            pagination.innerHTML = totalPages <= 1 ? '' : Array.from({length: totalPages}, (_, i) => '<button class="' + (i+1 === currentPage ? 'active' : '') + '" onclick="goToPage(' + (i+1) + ')">' + (i+1) + '</button>').join('');
+        }
+        function goToPage(page) { currentPage = page; renderAnnouncements(); }
+        function showDetail(id) {
+            const item = allAnnouncements.find(a => a.id === id); if (!item) return;
+            const dateStr = item.dateKey ? item.dateKey.slice(0,4) + '-' + item.dateKey.slice(4,6) + '-' + item.dateKey.slice(6,8) : '';
+            let bodyHtml = '<div class="detail-section"><h4>📅 发布时间</h4><div class="detail-content">' + dateStr + '</div></div><div class="detail-section"><h4>🌐 来源</h4><div class="detail-content">' + (item.source || '未知') + '</div></div>';
+            if (item.keywords.length > 0) bodyHtml += '<div class="detail-section"><h4>🏷️ 匹配关键词</h4><div class="detail-content">' + item.keywords.join(', ') + '</div></div>';
+            if (item.link && item.link.startsWith('http')) bodyHtml += '<div class="detail-section"><h4>🔗 公告链接</h4><div class="detail-content"><a href="' + item.link + '" target="_blank" class="detail-link">' + item.link + '</a></div></div>';
+            document.getElementById('modalTitle').textContent = item.title;
+            document.getElementById('modalBody').innerHTML = bodyHtml;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+
+        // 内嵌数据
+        const EMBEDDED_DATA = {"lastUpdate": "2026-04-22 13:57", "totalCount": 32, "announcements": [{"id": 31, "title": "康乐县政府投资项目造价咨询服务框架协议采购项目征集公告", "pubDate": "2026-04-22", "source": "中国招标投标公共服务平台", "link": "http://www.gc-zb.com/nav_5_7_3609_625.html", "keywords": ["造价"], "collectedAt": "2026-04-22", "slot": "下午"}, {"id": 32, "title": "阅湖台北区装配式集装箱房建设工程编标与招标代理服务", "pubDate": "2026-04-22", "source": "中国招标投标公共服务平台", "link": "http://www.gc-zb.com/nav_5_7_3609_625.html", "keywords": ["招标代理"], "collectedAt": "2026-04-22", "slot": "下午"}, {"id": 29, "title": "中国第一家乡镇企业纪念碑采购项目", "pubDate": "2026-04-22", "source": "中国招标投标公共服务平台", "link": "http://www.gc-zb.com/nav_5_7_3609_625.html", "keywords": [], "collectedAt": "2026-04-22", "slot": "下午"}, {"id": 30, "title": "天津天保基建股份有限公司2026-2029年度造价咨询服务单位", "pubDate": "2026-04-22", "source": "天津滨海新区造价信息网", "link": "http://www.ixbang.com/bdrc/1002599-r120116/", "keywords": ["造价"], "collectedAt": "2026-04-22", "slot": "下午"}, {"id": 25, "title": "天津人才峰会执行服务采购项目", "pubDate": "2026-04-21", "source": "", "link": "招标代理（天津泰达工程管理咨询有限公司）", "keywords": [], "collectedAt": "2026-04-21", "slot": "晚间"}, {"id": 28, "title": "交通运输部天津水运工程科学研究所土工离心机实验平台升级项目", "pubDate": "2026-04-21", "source": "", "link": "天津市东方瑞祥工程咨询有限公司代理", "keywords": [], "collectedAt": "2026-04-21", "slot": "晚间"}, {"id": 1, "title": "襄垣县化工园区王桥片区、富阳片区突发水污染事件三级防控体系建设项目全过程造价咨询服务结果公告", "pubDate": "2026-04-20", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/zbgg/202604/t20260420_26426837.htm", "keywords": ["造价", "全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 2, "title": "运城市盐湖区第五高级中学建设项目造价咨询服务结果公告", "pubDate": "2026-04-20", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/zbgg/202604/t20260420_26426795.htm", "keywords": ["造价"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 22, "title": "西丰县2025年高标准农田建设项目（续建部分）项目管理结果公告", "pubDate": "2026-04-20", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/cjgg/202604/t20260420_26427519.htm", "keywords": ["项目管理"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 23, "title": "天津市审计局协审（造价师）服务项目成交公告", "pubDate": "2026-04-20", "source": "天津市政府采购网", "link": "http://ccgp-tianjin.gov.cn/", "keywords": ["造价"], "collectedAt": "2026-04-21", "slot": "早间"}, {"id": 26, "title": "天津市公安局公安网络商密基础设施建设项目（一期）", "pubDate": "2026-04-20", "source": "", "link": "招标代理（天津市融达工程咨询有限公司）", "keywords": [], "collectedAt": "2026-04-21", "slot": "晚间"}, {"id": 3, "title": "武汉理工大学协同创新一站式学生社区全过程造价咨询服务公开招标公告", "pubDate": "2026-04-19", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/gkzb/202604/t20260419_26426688.htm", "keywords": ["造价", "全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 4, "title": "浮山县政府投资项目工程造价鉴定服务框架协议采购项目更正公告（第二次）", "pubDate": "2026-04-19", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gzgg/202604/t20260419_26426630.htm", "keywords": ["造价"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 5, "title": "乌审旗审计局工程造价咨询服务封闭式框架协议项目框架协议入围成交结果公告", "pubDate": "2026-04-19", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/cjgg/202604/t20260419_26426576.htm", "keywords": ["造价"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 6, "title": "2026年第二师29团高标准农田建设项目（造价）的竞争性磋商公告", "pubDate": "2026-04-18", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202604/t20260418_26425740.htm", "keywords": ["造价"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 7, "title": "山东大学（威海）图书馆加固改造及基础设施更新改造项目造价咨询服务公开招标公告", "pubDate": "2026-04-18", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/gkzb/202604/t20260418_26425317.htm", "keywords": ["造价"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 8, "title": "绥化市审计局2026年工程造价咨询服务采购项目征集公告", "pubDate": "2026-04-18", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202604/t20260418_26426108.htm", "keywords": ["造价"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 9, "title": "政府投资类建设项目造价咨询服务框架协议征集公告", "pubDate": "2026-04-18", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202604/t20260418_26426286.htm", "keywords": ["造价"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 10, "title": "庐山西海风景名胜区2026-2028年度水库移民后期扶持项目全过程咨询服务采购项目竞争性磋商采购公告", "pubDate": "2026-04-17", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/jzxtpgg/202604/t20260417_26420593.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 24, "title": "天津大学校园一卡通CPU卡片采购项目快速磋商公告", "pubDate": "2026-04-17", "source": "", "link": "**造价咨询**（代理：上海建科造价咨询有限公司）", "keywords": [], "collectedAt": "2026-04-21", "slot": "晚间"}, {"id": 27, "title": "天津大学资产处2026年度智慧类多媒体教室升级改造采购项目", "pubDate": "2026-04-17", "source": "", "link": "招标代理（盛和招标代理有限公司）", "keywords": [], "collectedAt": "2026-04-21", "slot": "晚间"}, {"id": 11, "title": "党湾镇幸福里未来社区全过程咨询服务项目中标(成交)结果公告", "pubDate": "2026-04-16", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/zbgg/202604/t20260416_26417602.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 12, "title": "重庆市涪陵区公立医院改革与高质量发展示范项目-信息化建设项目全过程咨询设计服务采购更正公告", "pubDate": "2026-04-16", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gzgg/202604/t20260416_26417336.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 13, "title": "南陵县经济开发区污水管网改造一标段全过程咨询服务项目成交结果公告", "pubDate": "2026-04-16", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/cjgg/202604/t20260416_26416071.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 14, "title": "南陵县城西污水处理厂(二期)周边管网改造全过程咨询成交结果公告", "pubDate": "2026-04-16", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/cjgg/202604/t20260416_26416070.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 15, "title": "莫旗2026年乡村振兴项目全过程咨询及绩效评价项目中标（成交）结果公告", "pubDate": "2026-04-16", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/cjgg/202604/t20260416_26413517.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 16, "title": "西宁市城北区建设巷老三线文化提升项目（工程造价全过程咨询）成交结果公告", "pubDate": "2026-04-15", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/zbgg/202604/t20260415_26409088.htm", "keywords": ["造价", "全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 17, "title": "南浔区薄弱学校整体提升改造项目全过程咨询项目中标(成交)结果公告", "pubDate": "2026-04-15", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/zbgg/202604/t20260415_26408360.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 18, "title": "大连医科大学附属第一医院门急诊楼加固补强项目全过程咨询服务采购结果公告", "pubDate": "2026-04-15", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/zbgg/202604/t20260415_26406490.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 19, "title": "周市镇2026年零星工程全过程咨询服务中标公告", "pubDate": "2026-04-14", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/zbgg/202604/t20260414_26403787.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 20, "title": "天津市静海区团泊水库东围堤建设工程生态环境保护全过程咨询服务竞争性磋商公告", "pubDate": "2026-04-13", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202604/t20260413_26398296.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}, {"id": 21, "title": "瀛海镇剩余户全过程咨询服务中标公告", "pubDate": "2026-04-13", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/zbgg/202604/t20260413_26397244.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午"}]};
+    </script>
+</body>
+</html>
