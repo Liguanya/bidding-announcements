@@ -1,7 +1,69 @@
 {
-  "lastUpdate": "2026-04-23 18:00",
-  "totalCount": 54,
+  "lastUpdate": "2026-04-24 09:02",
+  "totalCount": 59,
   "announcements": [
+    {
+      "id": 100,
+      "title": "天津大学北洋园校区网络安全与人工智能大楼造价咨询服务快速磋商公告",
+      "pubDate": "2026-04-22",
+      "source": "天津大学招投标管理办公室",
+      "link": "https://m.bidcenter.com.cn/news-1-415505683.html",
+      "keywords": [
+        "造价"
+      ],
+      "collectedAt": "2026-04-24",
+      "slot": "早间",
+      "budget": "98万元"
+    },
+    {
+      "id": 101,
+      "title": "文物保护项目第三方造价审核服务采购项目合同公告",
+      "pubDate": "2026-04-23",
+      "source": "招标与采购网",
+      "link": "http://www.gc-zb.com/nav_5_71_3609_625.html",
+      "keywords": [
+        "造价"
+      ],
+      "collectedAt": "2026-04-24",
+      "slot": "早间"
+    },
+    {
+      "id": 102,
+      "title": "2026年零星工程全过程咨询服务采购四次结果公示",
+      "pubDate": "2026-04-23",
+      "source": "采招网",
+      "link": "https://m.bidcenter.com.cn/news-4-415557075.html",
+      "keywords": [
+        "全过程咨询"
+      ],
+      "collectedAt": "2026-04-24",
+      "slot": "早间"
+    },
+    {
+      "id": 103,
+      "title": "余姚市四明山区域生态环境导向的开发（EOD）项目—山地运动中心工程全过程造价咨询服务",
+      "pubDate": "2026-04-23",
+      "source": "招标与采购网",
+      "link": "http://www.gc-zb.com/nav_5_71_3609_625.html",
+      "keywords": [
+        "造价",
+        "全过程咨询"
+      ],
+      "collectedAt": "2026-04-24",
+      "slot": "早间"
+    },
+    {
+      "id": 104,
+      "title": "吴江区平望镇2025年度防洪排涝工程全过程造价咨询服务",
+      "pubDate": "2026-04-23",
+      "source": "招标与采购网",
+      "link": "http://www.gc-zb.com/nav_5_71_3609_625.html",
+      "keywords": [
+        "造价"
+      ],
+      "collectedAt": "2026-04-24",
+      "slot": "早间"
+    },
     {
       "id": 47,
       "title": "苏州市市级财政投资项目工程造价委托协审服务项目（2026-QS1）",
