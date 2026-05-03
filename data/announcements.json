@@ -1,7 +1,94 @@
 {
-  "lastUpdate": "2026-05-02 14:01",
-  "totalCount": 142,
+  "lastUpdate": "2026-05-03 09:00",
+  "totalCount": 148,
   "announcements": [
+    {
+      "id": 218,
+      "title": "来宾市公安局交通管理支队采购办公电脑、打印机及网络维护服务项目公告",
+      "pubDate": "2026-05-02",
+      "source": "来宾市公安局",
+      "link": "http://m.toutiao.com/group/7635179929302286888/",
+      "keywords": [
+        "招标代理",
+        "网络维护"
+      ],
+      "collectedAt": "2026-05-03",
+      "slot": "上午",
+      "budget": "30万元",
+      "description": "地区：广西来宾；采购单位：来宾市公安局交通管理支队；招标控制价30万元；服务期限：三年；服务内容：软件系统维护、硬件设备维护、网络设备维护、中心机房运维服务；投标截止：2026-05-09 18:00"
+    },
+    {
+      "id": 219,
+      "title": "东莞市退役军人事务局2026年度政府采购项目招标代理机构遴选",
+      "pubDate": "2026-04-22",
+      "source": "东莞市退役军人事务局",
+      "link": "https://www.dg.gov.cn/dgstyjrswj/gkmlpt/content/4/4530/post_4530317.html",
+      "keywords": [
+        "招标代理"
+      ],
+      "collectedAt": "2026-05-03",
+      "slot": "上午",
+      "budget": "框架协议",
+      "description": "地区：广东东莞；采购单位：东莞市退役军人事务局；遴选内容：公开征集遴选招标代理机构纳入2026年度代理机构库；服务期限：2026年全年度"
+    },
+    {
+      "id": 220,
+      "title": "2026年度小型市政项目（200万以下）年度监理项目招标公告",
+      "pubDate": "2026-04-23",
+      "source": "扬州高新区",
+      "link": "http://www.hj.gov.cn/zfxxgk/zjdzfxxgk/yzgxqchjd/fdzdgknr/tzgg/art/2026/art_a7aabbb872bc4fb585287db31a00a03e.html",
+      "keywords": [
+        "监理",
+        "项目管理"
+      ],
+      "collectedAt": "2026-05-03",
+      "slot": "上午",
+      "budget": "1.8%费率",
+      "description": "地区：江苏扬州；招标单位：扬州兴汉建设投资有限公司；招标范围：2026年度工程造价200万元以下项目监理；中标方式：入围2家单位，服务期限1年"
+    },
+    {
+      "id": 221,
+      "title": "2026年建设工程零星项目项目管理",
+      "pubDate": "2026-04-29",
+      "source": "东风本田",
+      "link": "https://m.bidcenter.com.cn/news-6-416740164.html",
+      "keywords": [
+        "项目管理"
+      ],
+      "collectedAt": "2026-05-03",
+      "slot": "上午",
+      "budget": "按实结算",
+      "description": "地区：湖北武汉；采购单位：东风本田汽车有限公司；服务内容：2026年建设工程零星项目（一工厂、三工厂、PT工厂、新能源工厂）项目管理服务"
+    },
+    {
+      "id": 222,
+      "title": "蜀道投资集团有限责任公司2026年度工程造价咨询服务公开招标公告",
+      "pubDate": "2026-04-23",
+      "source": "蜀道投资集团",
+      "link": "https://zb.shudaojt.com/zbgg/20260423/ee5e6997-870e-4133-a3a1-4f9fecdb7de0.html",
+      "keywords": [
+        "造价咨询",
+        "招标代理"
+      ],
+      "collectedAt": "2026-05-03",
+      "slot": "上午",
+      "budget": "框架协议",
+      "description": "地区：四川成都；招标单位：四川蜀交能源发展有限公司；服务内容：招标代理、造价咨询、施工阶段全过程造价控制；合同期限：至2027年12月31日"
+    },
+    {
+      "id": 223,
+      "title": "某单位2026-2027年度招标代理服务项目公开招标公告",
+      "pubDate": "2026-04-17",
+      "source": "军队采购",
+      "link": "https://m.bidcenter.com.cn/news-1-414634694.html",
+      "keywords": [
+        "招标代理"
+      ],
+      "collectedAt": "2026-05-03",
+      "slot": "上午",
+      "budget": "框架协议",
+      "description": "地区：四川成都；采购单位：某部队；选取1家招标代理机构；服务期限：1年，可自动续约1年"
+    },
     {
       "id": 213,
       "title": "巢湖市审计局2026年度政府投资建设工程造价咨询服务（第一批）",
