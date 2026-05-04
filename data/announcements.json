@@ -1,7 +1,410 @@
 {
-  "lastUpdate": "2026-05-03 17:56",
-  "totalCount": 161,
+  "lastUpdate": "2026-05-04 09:00",
+  "totalCount": 190,
   "announcements": [
+    {
+      "id": 237,
+      "title": "安庆投发合肥建投安徽建工(肥西)新材料科技园项目造价咨询1标段招标公告",
+      "pubDate": "2026-05-03",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105670177.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "12万元",
+      "description": "地区：安徽安庆；项目名称：安徽建工(肥西)新材料科技园项目造价咨询1标段；项目报价：12万元"
+    },
+    {
+      "id": 238,
+      "title": "宁波奉化中交智慧城二期项目造价咨询服务采购招标公告",
+      "pubDate": "2026-05-02",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105665329.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：浙江宁波奉化；项目名称：中交智慧城二期项目造价咨询服务采购；资质要求：工程造价咨询"
+    },
+    {
+      "id": 239,
+      "title": "旌德县审计局2026-2028年政府投资建设项目造价咨询服务框架协议采购项目",
+      "pubDate": "2026-05-01",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105668184.html",
+      "keywords": [
+        "造价咨询",
+        "全过程咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：安徽旌德；采购单位：旌德县审计局；服务内容：2026-2028年政府投资建设项目造价咨询服务框架协议采购；资质要求：工程造价咨询"
+    },
+    {
+      "id": 240,
+      "title": "华南理工大学基建处2026年度造价咨询技术服务招标公告",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105667464.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "283万元",
+      "description": "地区：广东广州；采购单位：华南理工大学基建处；项目名称：2026年度造价咨询技术服务；预算金额：283万元"
+    },
+    {
+      "id": 241,
+      "title": "永善县城市地下综合管网改造项目全过程造价咨询服务招标公告",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105613941.html",
+      "keywords": [
+        "造价咨询",
+        "全过程咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "201万元",
+      "description": "地区：云南永善；项目名称：城市地下综合管网改造项目全过程造价咨询服务；预算金额：201万元"
+    },
+    {
+      "id": 242,
+      "title": "广东省审计厅审计项目造价咨询服务珠江三角洲水资源配置工程竣工决算审计",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105622344.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "281万元",
+      "description": "地区：广东广州；采购单位：广东省审计厅；服务内容：珠江三角洲水资源配置工程竣工决算审计；预算金额：281万元"
+    },
+    {
+      "id": 243,
+      "title": "龙岗区布吉街道等9个街道老旧小区改造工程全过程工程咨询(项目管理、监理)招标公告",
+      "pubDate": "2026-05-01",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105658876.html",
+      "keywords": [
+        "全过程咨询",
+        "项目管理",
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：广东深圳龙岗；项目名称：老旧小区改造工程全过程工程咨询；资质要求：房屋建筑工程监理甲级"
+    },
+    {
+      "id": 244,
+      "title": "浙江老年大学大型设备设施更新项目全过程项目管理及咨询服务",
+      "pubDate": "2026-05-01",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105668200.html",
+      "keywords": [
+        "全过程咨询",
+        "项目管理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "100万元",
+      "description": "地区：浙江杭州；项目名称：浙江老年大学大型设备设施更新项目全过程项目管理及咨询服务；预算金额：100万元"
+    },
+    {
+      "id": 245,
+      "title": "龙虎山现代农业产业园通信管道工程项目招标代理采购公告",
+      "pubDate": "2026-05-02",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105665826.html",
+      "keywords": [
+        "招标代理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "1万元",
+      "description": "地区：江西龙虎山；项目名称：现代农业产业园通信管道工程项目招标代理采购；项目报价：1万元"
+    },
+    {
+      "id": 246,
+      "title": "北大荒集团黑龙江洪河农场有限公司招标代理公司服务项目招标公告",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105654269.html",
+      "keywords": [
+        "招标代理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "50万元",
+      "description": "地区：黑龙江；采购单位：北大荒集团黑龙江洪河农场有限公司；项目名称：招标代理公司服务项目；项目报价：50万元"
+    },
+    {
+      "id": 247,
+      "title": "城南街道2026-2027年度招标代理及造价咨询框架协议单位征集项目",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105620460.html",
+      "keywords": [
+        "造价咨询",
+        "招标代理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：浙江；采购单位：城南街道；服务内容：2026-2027年度招标代理及造价咨询框架协议单位征集；资质要求：工程造价咨询"
+    },
+    {
+      "id": 248,
+      "title": "富新苑项目电梯采购招标代理机构选聘采购公告",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105624053.html",
+      "keywords": [
+        "招标代理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "1万元",
+      "description": "地区：江西；项目名称：富新苑项目电梯采购招标代理机构选聘；项目报价：1万元"
+    },
+    {
+      "id": 249,
+      "title": "颍淮农村商业银行招标代理及造价咨询服务项目",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105603077.html",
+      "keywords": [
+        "造价咨询",
+        "招标代理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：安徽阜阳；采购单位：颍淮农村商业银行；服务内容：招标代理及造价咨询服务项目"
+    },
+    {
+      "id": 250,
+      "title": "巢湖市审计局2026年度政府投资建设工程造价咨询服务(第一批)更正公告",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105643654.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：安徽合肥巢湖；采购单位：巢湖市审计局；服务内容：2026年度政府投资建设工程造价咨询服务（第一批）更正公告；资质要求：工程造价咨询"
+    },
+    {
+      "id": 251,
+      "title": "南漳县乳制品加工产业园及配套设施建设项目造价咨询服务竞争性磋商公告",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105603367.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "89万元",
+      "description": "地区：湖北南漳；项目名称：乳制品加工产业园及配套设施建设项目造价咨询服务；预算金额：89万元"
+    },
+    {
+      "id": 252,
+      "title": "国核电力规划设计研究院某电力发电项目常规岛及其BOP造价咨询辅助服务",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105608452.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "采购单位：国核电力规划设计研究院；服务内容：某电力发电项目常规岛及其BOP造价咨询辅助服务；资质要求：工程造价咨询"
+    },
+    {
+      "id": 253,
+      "title": "新建成都至自贡高速铁路项目概算清理造价咨询服务(含天府站)招标公告",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105661793.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：四川成都；项目名称：新建成都至自贡高速铁路项目概算清理造价咨询服务(含天府站)；资质要求：工程造价咨询"
+    },
+    {
+      "id": 254,
+      "title": "深圳东兴智谷项目全过程工程项目管理服务招标公告",
+      "pubDate": "2026-04-29",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105516051.html",
+      "keywords": [
+        "全过程咨询",
+        "项目管理",
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：广东深圳；项目名称：东兴智谷项目全过程工程项目管理服务；资质要求：工程造价咨询"
+    },
+    {
+      "id": 255,
+      "title": "深圳东兴智谷项目全过程工程项目管理服务截标信息",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105516099.html",
+      "keywords": [
+        "全过程咨询",
+        "项目管理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：广东深圳；项目名称：东兴智谷项目全过程工程项目管理服务截标信息"
+    },
+    {
+      "id": 256,
+      "title": "浙江建设职业技术学院新双高项目管理与绩效评价平台技术服务采购招标公告",
+      "pubDate": "2026-05-01",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105668053.html",
+      "keywords": [
+        "项目管理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "100万元",
+      "description": "地区：浙江；采购单位：浙江建设职业技术学院；项目名称：新双高项目管理与绩效评价平台技术服务采购；预算金额：100万元"
+    },
+    {
+      "id": 257,
+      "title": "深圳市海洋科学技术创新中心项目一期(造价咨询)招标文件技术标部分变更",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105623422.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：广东深圳；项目名称：深圳市海洋科学技术创新中心项目一期(造价咨询)招标文件技术标部分变更"
+    },
+    {
+      "id": 258,
+      "title": "石林县民族中学综合楼建设项目全过程跟踪造价咨询服务采购项目",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105614138.html",
+      "keywords": [
+        "造价咨询",
+        "全过程咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "85万元",
+      "description": "地区：云南石林；项目名称：民族中学综合楼建设项目全过程跟踪造价咨询服务采购；预算金额：85万元"
+    },
+    {
+      "id": 259,
+      "title": "克山县财政局2026年度财政投资评审项目预(概)算及结算造价咨询服务采购",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105612143.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：黑龙江克山；采购单位：克山县财政局；服务内容：2026年度财政投资评审项目预(概)算及结算造价咨询服务采购"
+    },
+    {
+      "id": 260,
+      "title": "黑龙江省地矿投资集团有限公司工程造价咨询服务供应商库建立项目",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105616411.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：黑龙江；采购单位：黑龙江省地矿投资集团有限公司；服务内容：工程造价咨询服务供应商库建立项目；资质要求：工程造价咨询"
+    },
+    {
+      "id": 261,
+      "title": "南宁市第九人民医院病房改造和能力提升项目工程造价咨询服务",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105620850.html",
+      "keywords": [
+        "造价咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：广西南宁；项目名称：第九人民医院病房改造和能力提升项目工程造价咨询服务；资质要求：工程造价咨询"
+    },
+    {
+      "id": 262,
+      "title": "徐闻县徐城街道百千万高质量发展基础设施建设工程施工全过程工程造价咨询",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105603893.html",
+      "keywords": [
+        "造价咨询",
+        "全过程咨询"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：广东徐闻；项目名称：徐城街道百千万高质量发展基础设施建设工程施工全过程工程造价咨询；资质要求：工程造价咨询"
+    },
+    {
+      "id": 263,
+      "title": "庆阳同欣50万吨/年轻烃深加工项目项目管理服务招标公告",
+      "pubDate": "2026-04-29",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105594337.html",
+      "keywords": [
+        "项目管理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：甘肃庆阳；项目名称：同欣50万吨/年轻烃深加工项目项目管理服务"
+    },
+    {
+      "id": 264,
+      "title": "S311建德至遂昌公路衢江区上方至峡川段改建工程招标代理及造价咨询服务",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105630659.html",
+      "keywords": [
+        "造价咨询",
+        "招标代理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "description": "地区：浙江衢州；项目名称：S311建德至遂昌公路衢江区上方至峡川段改建工程招标代理及造价咨询服务"
+    },
+    {
+      "id": 265,
+      "title": "国家级平湖经济技术开发区数字经济产城融合园区基础设施提升工程招标代理及造价咨询",
+      "pubDate": "2026-04-30",
+      "source": "全国招标信息网",
+      "link": "https://www.bidnews.cn/caigou/zhaobiao-105614985.html",
+      "keywords": [
+        "造价咨询",
+        "招标代理"
+      ],
+      "collectedAt": "2026-05-04",
+      "slot": "早间",
+      "budget": "12万元",
+      "description": "地区：浙江平湖；项目名称：国家级平湖经济技术开发区数字经济产城融合园区基础设施提升工程招标代理及造价咨询采购；预算金额：12万元"
+    },
     {
       "id": 231,
       "title": "武汉理工大学协同创新一站式学生社区全过程造价咨询服务",
