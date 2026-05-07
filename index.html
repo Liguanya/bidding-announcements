@@ -3,299 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📢 京津冀招标公告追踪平台</title>
+    <title>京津冀招标公告推送平台</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .header { background: linear-gradient(135deg, #1a73e8, #0d47a1); color: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; }
-        .header h1 { margin: 0 0 10px 0; font-size: 28px; }
-        .header .subtitle { font-size: 14px; opacity: 0.9; margin-bottom: 15px; }
-        .header .stats { display: flex; gap: 30px; font-size: 14px; opacity: 0.9; }
-        .stats-item { background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 20px; }
-        .filters { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { background: white; border-radius: 16px; padding: 30px; margin-bottom: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .header h1 { color: #333; font-size: 28px; margin-bottom: 8px; }
+        .header-subtitle { color: #666; font-size: 14px; margin-bottom: 16px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
+        .stat-card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 12px; text-align: center; }
+        .stat-card.green { background: linear-gradient(135deg, #43a047, #2e7d32); }
+        .stat-card.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
+        .stat-value { font-size: 2rem; font-weight: bold; }
+        .filters { background: white; border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .filter-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
         .filter-group { display: flex; align-items: center; gap: 8px; }
-        .filter-group label { font-weight: 500; color: #333; }
-        select, input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-        input[type="text"] { width: 200px; }
-        .btn { padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
-        .btn:hover { background: #1557b0; }
-        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #e8f0fe; color: #1a73e8; padding: 15px 12px; text-align: left; font-weight: 600; position: sticky; top: 0; }
-        td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: top; }
-        tr:hover { background: #f8f9fa; }
-        a { color: #1a73e8; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .keyword { display: inline-block; background: #e8f0fe; color: #1a73e8; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin: 2px; }
-        .budget { color: #e65100; font-weight: 500; }
-        .source { color: #666; font-size: 12px; }
-        .description { font-size: 13px; color: #555; max-width: 300px; }
-        .footer { text-align: center; padding: 20px; color: #666; font-size: 13px; }
-        .export-btns { display: flex; gap: 10px; }
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; }
-        .pagination button { padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; }
-        .pagination button:disabled { background: #ccc; cursor: not-allowed; }
-        .pagination span { color: #666; }
-        .highlight { background: #fff3cd; }
-        .empty-state { text-align: center; padding: 60px 20px; color: #666; }
-        .empty-state .icon { font-size: 48px; margin-bottom: 20px; }
+        .filter-group label { color: #666; font-size: 14px; }
+        .filter-group select { padding: 10px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; min-width: 140px; }
+        .search-box { flex: 1; min-width: 200px; }
+        .search-box input { width: 100%; padding: 10px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+        .announcement-list { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .announcement-item { border: 1px solid #e8e8e8; border-radius: 12px; padding: 20px; margin-bottom: 16px; cursor: pointer; transition: all 0.3s; }
+        .announcement-item:hover { border-color: #667eea; box-shadow: 0 4px 20px rgba(102,126,234,0.15); transform: translateX(4px); }
+        .item-title { color: #333; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .item-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+        .meta-tag { padding: 4px 12px; border-radius: 20px; font-size: 12px; background: #f0f0f0; color: #666; }
+        .meta-tag.source { background: #e3f2fd; color: #1565c0; }
+        .meta-tag.keyword { background: #fff3e0; color: #e65100; }
+        .item-date { color: #999; font-size: 13px; }
+        .region-tag { background: #e8f5e9; color: #2e7d32; }
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+        .pagination button { padding: 8px 16px; border: 1px solid #e0e0e0; background: white; border-radius: 8px; cursor: pointer; }
+        .pagination button.active { background: #667eea; color: white; border-color: #667eea; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .modal-title { font-size: 18px; color: #333; flex: 1; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+        .detail-section { margin-bottom: 16px; }
+        .detail-section h4 { color: #666; font-size: 14px; margin-bottom: 8px; }
+        .detail-content { color: #333; font-size: 14px; }
+        .detail-link { color: #1e88e5; text-decoration: none; word-break: break-all; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>📢 京津冀招标公告追踪平台</h1>
-        <div class="subtitle">仅推送京津冀地区（北京、天津、河北）5个工作日内公告</div>
-        <div class="stats">
-            <span class="stats-item">📊 总计: <span id="totalCount">0</span> 条</span>
-            <span class="stats-item">🕐 最后更新: <span id="lastUpdate">-</span></span>
+    <div class="container">
+        <div class="header">
+            <h1>京津冀招标公告推送平台</h1>
+            <p class="header-subtitle">实时推送京津冀地区政府采购招标公告 | 最后更新: 2026-05-07 15:19</p>
+            <div class="stats">
+                <div class="stat-card"><div class="stat-label">总公告数</div><div class="stat-value" id="totalCount">-</div></div>
+                <div class="stat-card green"><div class="stat-label">今日新增</div><div class="stat-value" id="todayCount">-</div></div>
+                <div class="stat-card orange"><div class="stat-label">天津地区</div><div class="stat-value" id="tjCount">-</div></div>
+                <div class="stat-card"><div class="stat-label">京津冀公告</div><div class="stat-value" id="nationCount">-</div></div>
+            </div>
+        </div>
+        <div class="filters">
+            <div class="filter-row">
+                <div class="filter-group"><label>日期</label><select id="filterDate"><option value="">全部日期</option></select></div>
+                <div class="filter-group"><label>关键词</label><select id="filterKeyword"><option value="">全部关键词</option><option value="造价">造价</option><option value="全过程">全过程</option><option value="招标代理">招标代理</option><option value="项目管理">项目管理</option></select></div>
+                <div class="filter-group"><label>地区</label><select id="filterRegion"><option value="">全部地区</option><option value="天津">天津</option><option value="北京">北京</option><option value="河北">河北</option></select></div>
+                <div class="search-box"><input type="text" id="searchInput" placeholder="搜索公告..."></div>
+                <button onclick="resetFilters()" style="padding:10px 20px;border:1px solid #e0e0e0;border-radius:8px;background:white;cursor:pointer;">重置</button>
+            </div>
+        </div>
+        <div class="announcement-list">
+            <h3 style="margin-bottom:20px;">公告列表 <span id="resultCount"></span></h3>
+            <div id="announcementList"></div>
+            <div class="pagination" id="pagination"></div>
         </div>
     </div>
-    
-    <div class="filters">
-        <div class="filter-group">
-            <label>地区:</label>
-            <select id="regionFilter">
-                <option value="jingjinji">京津冀</option>
-                <option value="all">全部</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>关键词:</label>
-            <input type="text" id="keywordFilter" placeholder="搜索关键词...">
-        </div>
-        <div class="filter-group">
-            <label>来源:</label>
-            <select id="sourceFilter">
-                <option value="">全部</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>日期:</label>
-            <input type="date" id="dateFilter">
-        </div>
-        <button class="btn" onclick="applyFilters()">🔍 筛选</button>
-        <button class="btn" onclick="resetFilters()">🔄 重置</button>
-        <div class="export-btns">
-            <button class="btn" onclick="exportCSV()">📥 导出CSV</button>
-            <button class="btn" onclick="exportJSON()">📥 导出JSON</button>
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header"><h2 class="modal-title" id="modalTitle"></h2><button class="modal-close" onclick="closeModal()">x</button></div>
+            <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
-    
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:60px">ID</th>
-                    <th style="width:100px">日期</th>
-                    <th>标题</th>
-                    <th style="width:100px">来源</th>
-                    <th style="width:150px">关键词</th>
-                    <th style="width:120px">预算</th>
-                    <th>摘要</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <!-- 数据行将通过JavaScript动态生成 -->
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="pagination">
-        <button onclick="prevPage()" id="prevBtn">上一页</button>
-        <span id="pageInfo">第 1 页，共 1 页</span>
-        <button onclick="nextPage()" id="nextBtn">下一页</button>
-    </div>
-    
-    <div class="footer">
-        <p>📌 仅推送京津冀地区（北京、天津、河北）5个工作日内相关公告</p>
-        <p>数据来源：天津市政府采购网、北京政府采购网、河北省政府采购网、中国招标投标公共服务平台等</p>
-    </div>
-
     <script>
-        // 京津冀地区关键词
-        const BEIJING_KEYWORDS = ['北京', '北京市', '海淀', '朝阳', '丰台', '石景山', '通州', '顺义', '房山', '大兴', '昌平', '怀柔', '平谷', '门头沟', '延庆', '密云'];
-        const TIANJIN_KEYWORDS = ['天津', '天津市', '滨海', '武清', '宝坻', '静海', '宁河', '蓟州', '西青', '津南', '北辰', '东丽'];
-        const HEBEI_KEYWORDS = ['河北', '河北省', '石家庄', '唐山', '保定', '廊坊', '秦皇岛', '邯郸', '邢台', '张家口', '承德', '沧州', '衡水', '雄安', '雄安新区', '曹妃甸'];
-        const JINGJINJI_KEYWORDS = [...BEIJING_KEYWORDS, ...TIANJIN_KEYWORDS, ...HEBEI_KEYWORDS];
-
-        const announcementsData = [];
-
-        let filteredData = [...announcementsData];
-        let currentPage = 1;
-        const pageSize = 50;
-
-        // 检查是否包含京津冀关键词
-        function containsJingjinji(text) {
-            if (!text) return false;
-            return JINGJINJI_KEYWORDS.some(keyword => text.includes(keyword));
+        const DATA = [{"title": "天津市应急管理局2026年全过程绩效评价管理及项目评审服务项目（项目编号：TGPC-2026-D-0301）竞争性磋商公告", "pubDate": "2026-04-30", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=982456789", "source": "天津市政府采购中心", "budget": "", "projectCode": "", "unit": "", "id": 2, "collectedAt": "2026-05-07", "keywords": ["造价", "全过程"]}, {"title": "天津市社会无主危险废物（含有害垃圾）处置及危险废物全过程环境管理能力提升项目（项目编号：TGPC-2026-D-0389）公开招标公告", "pubDate": "2026-05-07", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=984509876", "source": "天津市政府采购中心", "budget": "", "projectCode": "", "unit": "", "id": 1, "collectedAt": "2026-05-07", "keywords": ["造价", "全过程"]}];
+        let allAnnouncements = DATA || [], filteredAnnouncements = [], currentPage = 1, pageSize = 15;
+        document.addEventListener('DOMContentLoaded', function() { loadData(); setupFilters(); document.getElementById("searchInput").addEventListener("input", handleSearch); });
+        function loadData() {
+            allAnnouncements = allAnnouncements.map(item => ({...item, dateKey: item.pubDate ? item.pubDate.replace(/-/g, "") : ""}));
+            filteredAnnouncements = [...allAnnouncements];
+            updateStats(); initFilterOptions(); renderAnnouncements();
         }
-
-        // 检查日期是否在5个工作日内（排除周末）
-        function isWithin5Workdays(dateStr) {
-            if (!dateStr) return false;
-            const today = new Date('2026-05-07'); // 当前日期
-            const targetDate = new Date(dateStr);
-            
-            let count = 0;
-            let checkDate = new Date(today);
-            
-            // 从今天往前数5个工作日
-            while (count < 5) {
-                const dayOfWeek = checkDate.getDay();
-                if (dayOfWeek !== 0 && dayOfWeek !== 6) { // 不是周末
-                    count++;
-                }
-                if (count < 5) {
-                    checkDate.setDate(checkDate.getDate() - 1);
-                }
-            }
-            
-            // 返回目标日期是否在有效范围内
-            return targetDate >= checkDate && targetDate <= today;
+        function updateStats() {
+            document.getElementById("totalCount").textContent = allAnnouncements.length;
+            const today = new Date().toISOString().split("T")[0];
+            document.getElementById("todayCount").textContent = allAnnouncements.filter(a => a.collectedAt === today).length;
+            document.getElementById("tjCount").textContent = allAnnouncements.filter(a => a.region === "天津" || (a.source && a.source.includes("天津"))).length;
+            document.getElementById("nationCount").textContent = allAnnouncements.length;
         }
-
-        // 动态更新来源筛选选项
-        function updateSourceOptions() {
-            const sourceSelect = document.getElementById('sourceFilter');
-            const sources = [...new Set(announcementsData.map(a => a.source).filter(Boolean))];
-            sourceSelect.innerHTML = '<option value="">全部</option>' + 
-                sources.map(s => `<option value="${s}">${s}</option>`).join('');
+        function initFilterOptions() {
+            const dates = [...new Set(allAnnouncements.map(a => a.pubDate).filter(Boolean))].sort().reverse();
+            const dateSelect = document.getElementById("filterDate");
+            dates.forEach(d => { const opt = document.createElement("option"); opt.value = d; opt.textContent = d; dateSelect.appendChild(opt); });
+            document.getElementById("filterDate").addEventListener("change", applyFilters);
+            document.getElementById("filterKeyword").addEventListener("change", applyFilters);
+            document.getElementById("filterRegion").addEventListener("change", applyFilters);
         }
-
-        function renderTable() {
-            document.getElementById('totalCount').textContent = filteredData.length;
-            const lastItem = announcementsData[0];
-            if (lastItem) {
-                document.getElementById('lastUpdate').textContent = lastItem.collectedAt || lastItem.pubDate || '-';
-            }
-            
-            const start = (currentPage - 1) * pageSize;
-            const end = start + pageSize;
-            const pageData = filteredData.slice(start, end);
-            
-            const tbody = document.getElementById('tableBody');
-            
-            if (pageData.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <div class="icon">📭</div>
-                                <p>暂无符合条件的公告</p>
-                                <p style="font-size: 13px; color: #999;">当前显示京津冀地区5个工作日内的公告</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                tbody.innerHTML = pageData.map(ann => {
-                    const keywords = ann.keywords ? ann.keywords.map(k => `<span class="keyword">${k}</span>`).join('') : '';
-                    const budget = ann.budget ? `<span class="budget">${ann.budget}</span>` : '';
-                    return `<tr>
-                        <td>${ann.id}</td>
-                        <td>${ann.pubDate}</td>
-                        <td><a href="${ann.link}" target="_blank">${ann.title}</a></td>
-                        <td class="source">${ann.source}</td>
-                        <td>${keywords}</td>
-                        <td>${budget}</td>
-                        <td class="description">${ann.description || ''}</td>
-                    </tr>`;
-                }).join('');
-            }
-            
-            const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
-            document.getElementById('pageInfo').textContent = `第 ${currentPage} 页，共 ${totalPages} 页 (共 ${filteredData.length} 条)`;
-            document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('nextBtn').disabled = currentPage >= totalPages;
-        }
-        
         function applyFilters() {
-            const region = document.getElementById('regionFilter').value;
-            const keyword = document.getElementById('keywordFilter').value.toLowerCase();
-            const source = document.getElementById('sourceFilter').value;
-            const date = document.getElementById('dateFilter').value;
-            
-            filteredData = announcementsData.filter(ann => {
-                // 地区筛选
-                const matchRegion = (region === 'all') || 
-                    (containsJingjinji(ann.title) || containsJingjinji(ann.description));
-                
-                // 关键词筛选
-                const matchKeyword = !keyword || 
-                    (ann.title && ann.title.toLowerCase().includes(keyword)) ||
-                    (ann.description && ann.description.toLowerCase().includes(keyword)) ||
-                    (ann.keywords && ann.keywords.some(k => k.toLowerCase().includes(keyword)));
-                
-                // 来源筛选
-                const matchSource = !source || ann.source === source;
-                
-                // 日期筛选
-                const matchDate = !date || ann.pubDate === date;
-                
-                // 5个工作日内筛选（仅当选择京津冀时生效）
-                const matchWorkdays = (region === 'all') || isWithin5Workdays(ann.pubDate);
-                
-                return matchRegion && matchKeyword && matchSource && matchDate && matchWorkdays;
+            const date = document.getElementById("filterDate").value;
+            const keyword = document.getElementById("filterKeyword").value;
+            const region = document.getElementById("filterRegion").value;
+            const search = document.getElementById("searchInput").value.toLowerCase();
+            filteredAnnouncements = allAnnouncements.filter(a => {
+                if (date && a.pubDate !== date) return false;
+                if (keyword && !(a.keywords && a.keywords.some(k => k.includes(keyword)))) return false;
+                if (region && !(a.region === region || (a.source && a.source.includes(region)))) return false;
+                if (search && !(a.title && a.title.toLowerCase().includes(search))) return false;
+                return true;
             });
-            
-            currentPage = 1;
-            renderTable();
+            currentPage = 1; renderAnnouncements();
         }
-        
-        function resetFilters() {
-            document.getElementById('regionFilter').value = 'jingjinji';
-            document.getElementById('keywordFilter').value = '';
-            document.getElementById('sourceFilter').value = '';
-            document.getElementById('dateFilter').value = '';
-            filteredData = [...announcementsData];
-            currentPage = 1;
-            applyFilters();
+        function handleSearch() { applyFilters(); }
+        function resetFilters() { document.getElementById("filterDate").value = ""; document.getElementById("filterKeyword").value = ""; document.getElementById("filterRegion").value = ""; document.getElementById("searchInput").value = ""; applyFilters(); }
+        function renderAnnouncements() {
+            const start = (currentPage - 1) * pageSize, end = start + pageSize;
+            const items = filteredAnnouncements.slice(start, end);
+            const container = document.getElementById("announcementList");
+            if (items.length === 0) { container.innerHTML = "<p style='text-align:center;color:#999;padding:40px;'>暂无公告</p>"; document.getElementById("pagination").innerHTML = ""; document.getElementById("resultCount").textContent = ""; return; }
+            container.innerHTML = items.map(item => {
+                const sourceTag = "<span class='meta-tag source'>" + (item.source || "未知") + "</span>";
+                const regionTag = item.region ? "<span class='meta-tag region-tag'>" + item.region + "</span>" : "";
+                const keywordTags = item.keywords ? item.keywords.map(k => "<span class='meta-tag keyword'>" + k + "</span>").join("") : "";
+                const dateStr = "<div class='item-date'>" + (item.pubDate || "") + " | " + (item.collectedAt || "") + "</div>";
+                return "<div class='announcement-item' onclick='showDetail(" + JSON.stringify(item).replace(/'/g, "\u0027") + ")'>" +
+                    "<div class='item-title'>" + item.title + "</div><div class='item-meta'>" + sourceTag + regionTag + keywordTags + "</div>" + dateStr + "</div>";
+            }).join("");
+            document.getElementById("resultCount").textContent = "(共" + filteredAnnouncements.length + "条)";
+            renderPagination();
         }
-        
-        function prevPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable();
-            }
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredAnnouncements.length / pageSize);
+            const pagination = document.getElementById("pagination");
+            if (totalPages <= 1) { pagination.innerHTML = ""; return; }
+            let html = "<button onclick='changePage(1)' " + (currentPage === 1 ? "disabled" : "") + ">«</button>";
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { html += "<button onclick='changePage(" + i + ")' class='" + (i === currentPage ? "active" : "") + "'>" + i + "</button>"; }
+            html += "<button onclick='changePage(" + totalPages + ")' " + (currentPage === totalPages ? "disabled" : "") + ">»</button>";
+            pagination.innerHTML = html;
         }
-        
-        function nextPage() {
-            const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderTable();
-            }
+        function changePage(page) { currentPage = page; renderAnnouncements(); window.scrollTo({top: 0, behavior: "smooth"}); }
+        function showDetail(item) {
+            document.getElementById("modalTitle").textContent = item.title;
+            let html = "<div class='detail-section'><h4>来源</h4><div>" + (item.source || "未知") + "</div></div>";
+            html += "<div class='detail-section'><h4>发布日期</h4><div>" + (item.pubDate || "") + "</div></div>";
+            if (item.region) html += "<div class='detail-section'><h4>地区</h4><div>" + item.region + "</div></div>";
+            if (item.budget) html += "<div class='detail-section'><h4>预算金额</h4><div>" + item.budget + "</div></div>";
+            html += "<div class='detail-section'><h4>关键词</h4><div>" + ((item.keywords || []).join(" | ")) + "</div></div>";
+            html += "<div class='detail-section'><h4>原文链接</h4><div><a class='detail-link' href='" + item.link + "' target='_blank'>" + (item.link || "无") + "</a></div></div>";
+            document.getElementById("modalBody").innerHTML = html;
+            document.getElementById("modalOverlay").classList.add("active");
         }
-        
-        function exportCSV() {
-            const headers = ['ID', '日期', '标题', '来源', '关键词', '预算', '描述', '链接'];
-            const rows = filteredData.map(ann => [
-                ann.id, ann.pubDate, ann.title, ann.source,
-                (ann.keywords || []).join(';'), ann.budget || '', ann.description || '', ann.link
-            ]);
-            
-            let csv = headers.join(',') + '\n';
-            rows.forEach(row => {
-                csv += row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
-            });
-            
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `京津冀招标公告_${new Date().toISOString().slice(0,10)}.csv`;
-            link.click();
-        }
-        
-        function exportJSON() {
-            const blob = new Blob([JSON.stringify(filteredData, null, 2)], { type: 'application/json' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `京津冀招标公告_${new Date().toISOString().slice(0,10)}.json`;
-            link.click();
-        }
-        
-        // 初始化
-        updateSourceOptions();
-        applyFilters();
+        function closeModal() { document.getElementById("modalOverlay").classList.remove("active"); }
+        document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
     </script>
 </body>
 </html>
