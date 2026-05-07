@@ -41,8 +41,8 @@
     <div class="header">
         <h1>📢 招标公告追踪平台</h1>
         <div class="stats">
-            <span class="stats-item">📊 总计: 30 条</span>
-            <span class="stats-item">🕐 最后更新: 2026-05-07 14:00</span>
+            <span class="stats-item">📊 总计: <span id="totalCount">0</span> 条</span>
+            <span class="stats-item">🕐 最后更新: <span id="lastUpdate">-</span></span>
         </div>
     </div>
     
@@ -564,22 +564,25 @@
         const pageSize = 50;
         
         function renderTable() {
+            document.getElementById('totalCount').textContent = announcementsData.length;
+            const lastItem = announcementsData[0];
+            if (lastItem) document.getElementById('lastUpdate').textContent = lastItem.collectedAt || lastItem.pubDate || '-';
             const start = (currentPage - 1) * pageSize;
             const end = start + pageSize;
             const pageData = filteredData.slice(start, end);
             
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = pageData.map(ann => {
-                const keywords = ann.keywords ? ann.keywords.map(k => `<span class="keyword">{k}</span>`).join('') : '';
-                const budget = ann.budget ? `<span class="budget">{ann.budget}</span>` : '';
+                const keywords = ann.keywords ? ann.keywords.map(k => `<span class="keyword">${k}</span>`).join('') : '';
+                const budget = ann.budget ? `<span class="budget">${ann.budget}</span>` : '';
                 return `<tr>
-                    <td>{ann.id}</td>
-                    <td>{ann.pubDate}</td>
-                    <td><a href="{ann.link}" target="_blank">{ann.title}</a></td>
-                    <td class="source">{ann.source}</td>
-                    <td>{keywords}</td>
-                    <td>{budget}</td>
-                    <td class="description">{ann.description || ''}</td>
+                    <td>${ann.id}</td>
+                    <td>${ann.pubDate}</td>
+                    <td><a href="${ann.link}" target="_blank">${ann.title}</a></td>
+                    <td class="source">${ann.source}</td>
+                    <td>${keywords}</td>
+                    <td>${budget}</td>
+                    <td class="description">${ann.description || ''}</td>
                 </tr>`;
             }).join('');
             
