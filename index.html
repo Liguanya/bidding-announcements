@@ -3,237 +3,664 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>招标公告信息平台 - 造价咨询/全过程咨询/招标代理/项目管理</title>
+    <title>招标公告追踪平台</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
-        .header { background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%); color: white; padding: 30px 20px; text-align: center; }
-        .header h1 { font-size: 28px; margin-bottom: 10px; }
-        .header p { opacity: 0.9; font-size: 14px; }
-        .stats { display: flex; justify-content: center; gap: 40px; margin-top: 20px; flex-wrap: wrap; }
-        .stat-item { text-align: center; }
-        .stat-number { font-size: 32px; font-weight: bold; }
-        .stat-label { font-size: 12px; opacity: 0.8; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .filters { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .filter-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; }
-        .filter-row:last-child { margin-bottom: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .header { background: linear-gradient(135deg, #1a73e8, #0d47a1); color: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; }
+        .header h1 { margin: 0 0 10px 0; font-size: 28px; }
+        .header .stats { display: flex; gap: 30px; font-size: 14px; opacity: 0.9; }
+        .stats-item { background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 20px; }
+        .filters { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
         .filter-group { display: flex; align-items: center; gap: 8px; }
-        .filter-group label { font-weight: 500; color: #666; white-space: nowrap; }
-        .filter-group select, .filter-group input { padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 14px; min-width: 120px; }
-        .filter-group input { min-width: 200px; }
-        .btn { padding: 8px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
-        .btn-primary { background: #1890ff; color: white; }
-        .btn-primary:hover { background: #096dd9; }
-        .btn-export { background: #52c41a; color: white; }
-        .btn-export:hover { background: #3b8e1f; }
-        .card { background: white; border-radius: 8px; margin-bottom: 15px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: transform 0.2s, box-shadow 0.2s; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-        .card-title { font-size: 16px; font-weight: 600; color: #1890ff; cursor: pointer; flex: 1; margin-right: 15px; }
-        .card-title:hover { color: #096dd9; text-decoration: underline; }
-        .card-budget { background: #fff7e6; color: #fa8c16; padding: 4px 10px; border-radius: 4px; font-size: 13px; white-space: nowrap; }
-        .card-meta { display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: #666; margin-bottom: 10px; }
-        .card-meta span { display: flex; align-items: center; gap: 4px; }
-        .card-keywords { display: flex; gap: 8px; flex-wrap: wrap; }
-        .keyword { background: #e6f7ff; color: #1890ff; padding: 2px 8px; border-radius: 3px; font-size: 12px; }
-        .card-desc { font-size: 14px; color: #666; margin-top: 10px; line-height: 1.5; }
-        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 30px; }
-        .pagination button { padding: 8px 14px; border: 1px solid #d9d9d9; background: white; border-radius: 4px; cursor: pointer; }
-        .pagination button:hover { border-color: #1890ff; color: #1890ff; }
-        .pagination button.active { background: #1890ff; color: white; border-color: #1890ff; }
-        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .no-data { text-align: center; padding: 60px; color: #999; font-size: 16px; }
-        .footer { text-align: center; padding: 30px; color: #999; font-size: 13px; margin-top: 40px; border-top: 1px solid #e8e8e8; }
-        .tag { display: inline-block; padding: 2px 6px; border-radius: 2px; font-size: 11px; }
-        .tag-source { background: #f5f5f5; color: #666; }
-        .tag-slot-morning { background: #fffbe6; color: #ad6800; }
-        .tag-slot-afternoon { background: #e6fffb; color: #08979c; }
-        .tag-slot-evening { background: #f9f0ff; color: #722ed1; }
-        @media (max-width: 768px) {
-            .filter-row { flex-direction: column; }
-            .filter-group { width: 100%; }
-            .filter-group select, .filter-group input { width: 100%; min-width: auto; }
-            .card-meta { flex-direction: column; gap: 5px; }
-            .stats { gap: 20px; }
-        }
+        .filter-group label { font-weight: 500; color: #333; }
+        select, input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        input[type="text"] { width: 200px; }
+        .btn { padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn:hover { background: #1557b0; }
+        .table-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #e8f0fe; color: #1a73e8; padding: 15px 12px; text-align: left; font-weight: 600; position: sticky; top: 0; }
+        td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+        tr:hover { background: #f8f9fa; }
+        a { color: #1a73e8; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .keyword { display: inline-block; background: #e8f0fe; color: #1a73e8; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin: 2px; }
+        .budget { color: #e65100; font-weight: 500; }
+        .source { color: #666; font-size: 12px; }
+        .description { font-size: 13px; color: #555; max-width: 300px; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 13px; }
+        .export-btns { display: flex; gap: 10px; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; }
+        .pagination button { padding: 8px 16px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .pagination button:disabled { background: #ccc; cursor: not-allowed; }
+        .pagination span { color: #666; }
+        .highlight { background: #fff3cd; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>📢 招标公告信息平台</h1>
-        <p>造价咨询 | 全过程咨询 | 招标代理 | 项目管理</p>
+        <h1>📢 招标公告追踪平台</h1>
         <div class="stats">
-            <div class="stat-item"><div class="stat-number" id="totalCount">340</div><div class="stat-label">公告总数</div></div>
-            <div class="stat-item"><div class="stat-number" id="updateTime">2026-05-07</div><div class="stat-label">最后更新</div></div>
-            <div class="stat-item"><div class="stat-number" id="filterCount">340</div><div class="stat-label">筛选结果</div></div>
+            <span class="stats-item">📊 总计: 30 条</span>
+            <span class="stats-item">🕐 最后更新: 2026-05-07 14:00</span>
         </div>
     </div>
-    <div class="container">
-        <div class="filters">
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label>关键词:</label>
-                    <input type="text" id="searchKeyword" placeholder="搜索标题/描述...">
-                </div>
-                <div class="filter-group">
-                    <label>类型:</label>
-                    <select id="filterType">
-                        <option value="">全部</option>
-                        <option value="造价咨询">造价咨询</option>
-                        <option value="全过程咨询">全过程咨询</option>
-                        <option value="招标代理">招标代理</option>
-                        <option value="项目管理">项目管理</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>来源:</label>
-                    <select id="filterSource">
-                        <option value="">全部</option>
-                        <option value="中国政府采购网">中国政府采购网</option>
-                        <option value="采招网">采招网</option>
-                        <option value="安徽政府采购网">安徽政府采购网</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>日期:</label>
-                    <input type="date" id="filterDate">
-                </div>
-            </div>
-            <div class="filter-row">
-                <button class="btn btn-primary" onclick="filterAnnouncements()">🔍 搜索</button>
-                <button class="btn btn-export" onclick="exportCSV()">📥 导出CSV</button>
-                <button class="btn" onclick="resetFilters()" style="background:#f5f5f5;color:#666;">重置</button>
-            </div>
+    
+    <div class="filters">
+        <div class="filter-group">
+            <label>关键词:</label>
+            <input type="text" id="keywordFilter" placeholder="搜索关键词...">
         </div>
-        <div id="announcementsList"></div>
-        <div class="pagination" id="pagination"></div>
+        <div class="filter-group">
+            <label>来源:</label>
+            <select id="sourceFilter">
+                <option value="">全部</option>
+                <option value="中国招标投标公共服务平台">中国招标投标公共服务平台</option> <option value="中国政府采购网">中国政府采购网</option> <option value="中国采购与招标网">中国采购与招标网</option> <option value="安徽合肥公共资源交易网">安徽合肥公共资源交易网</option> <option value="安徽政府采购网">安徽政府采购网</option> <option value="新疆政府采购网">新疆政府采购网</option> <option value="武汉市招标网">武汉市招标网</option> <option value="江苏政府采购网">江苏政府采购网</option> <option value="济宁市公共资源交易网">济宁市公共资源交易网</option> <option value="电力集采招标网">电力集采招标网</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>日期:</label>
+            <input type="date" id="dateFilter">
+        </div>
+        <button class="btn" onclick="applyFilters()">🔍 筛选</button>
+        <button class="btn" onclick="resetFilters()">🔄 重置</button>
+        <div class="export-btns">
+            <button class="btn" onclick="exportCSV()">📥 导出CSV</button>
+            <button class="btn" onclick="exportJSON()">📥 导出JSON</button>
+        </div>
     </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:60px">ID</th>
+                    <th style="width:100px">日期</th>
+                    <th>标题</th>
+                    <th style="width:100px">来源</th>
+                    <th style="width:150px">关键词</th>
+                    <th style="width:120px">预算</th>
+                    <th>摘要</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- 数据行将通过JavaScript动态生成 -->
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="pagination">
+        <button onclick="prevPage()" id="prevBtn">上一页</button>
+        <span id="pageInfo">第 1 页，共 1 页</span>
+        <button onclick="nextPage()" id="nextBtn">下一页</button>
+    </div>
+    
     <div class="footer">
-        <p>数据来源：中国政府采购网、采招网等公开招标平台 | 仅供信息参考</p>
-        <p>© 2026 招标公告信息平台 | <a href="https://github.com/Liguanya/bidding-announcements" target="_blank">GitHub</a></p>
+        <p>数据来源：中国政府采购网、各地公共资源交易中心、采招网等 | 仅供学习参考</p>
     </div>
 
-<script>
-// 内嵌数据 - 招标公告
-const DATA = {"lastUpdate":"2026-05-07 09:00","totalCount":340,"announcements":[{"id":340,"title":"某工程全过程工程咨询（二次）招标公告","pubDate":"2026-05-07","source":"采招网","link":"https://m.bidcenter.com.cn/news-1-415197740.html","keywords":["全过程咨询","项目管理","造价咨询","工程监理"],"collectedAt":"2026-05-07","slot":"上午","description":"地区：吉林长春；建设规模：食堂及附属设施，营区内部分用房外窗节能改造；服务范围：项目管理、设计、造价咨询、工程监理；截止时间：2026-05-15"},{"id":339,"title":"某单位2026年度工程项目全过程咨询服务采购","pubDate":"2026-05-07","source":"武汉市招标网","link":"https://wuhan.hangnian.com/info-69d8a925f1200000f8005592.html","keywords":["全过程咨询","项目管理","造价咨询","招标代理"],"collectedAt":"2026-05-07","slot":"上午","description":"地区：湖北武汉；采购单位：某单位；服务内容：全过程项目管理、投资咨询、工程勘察、工程设计、造价咨询、工程招标代理、工程监理；合同期限1年；截止时间：2026-05-07"},{"id":338,"title":"巢湖市审计局2026年度政府投资建设工程造价咨询服务（第一批）","pubDate":"2026-05-07","source":"安徽合肥公共资源交易网","link":"https://zfcg.ah.gov.cn/site/detail?articleId=qLcnXsF+inY7J7Bd6aCAvg==","keywords":["造价咨询","政府投资","框架协议"],"collectedAt":"2026-05-07","slot":"上午","budget":"180万元（5包各36万元）","description":"地区：安徽合肥巢湖；采购单位：巢湖市审计局；采购内容：工程造价咨询服务；分5个采购包，每包36万；专门面向中小企业；投标截止：2026-05-20 09:00"},{"id":337,"title":"某单位全过程工程咨询单位选取","pubDate":"2026-05-07","source":"采招网","link":"https://m.bidcenter.com.cn/news-1-416236490.html","keywords":["全过程咨询","项目管理","造价咨询","工程监理"],"collectedAt":"2026-05-07","slot":"上午","description":"地区：湖北武汉；采购单位：某部；服务内容：项目管理、决策咨询、勘察设计、招标代理、工程监理、造价咨询；服务期12个月；选取2家入围单位；投标截止：2026-05-20 09:30"},{"id":336,"title":"某学校2026-2027年招标代理服务机构入围比选","pubDate":"2026-05-07","source":"中国采购与招标网","link":"https://sc.bidcenter.com.cn/diqucontent-416113394-1.html","keywords":["招标代理","入围比选"],"collectedAt":"2026-05-07","slot":"上午","description":"地区：四川资阳；采购单位：某学校；采购内容：2026~2027年度招标代理机构入围；入围2家；服务期限1年；截止时间：2026-05-07 15:00"},{"id":335,"title":"国核电力规划设计研究院发电项目常规岛造价咨询辅助服务招标","pubDate":"2026-04-30","source":"采招网","link":"https://m.dljczb.com/wd-336/789/","keywords":["造价咨询","电力项目"],"collectedAt":"2026-05-06","slot":"晚间","description":"采购单位：国核电力规划设计研究院有限公司；服务内容：某电力发电项目常规岛及BOP造价咨询辅助服务"},{"id":334,"title":"新疆医科大学第一附属医院建设工程造价咨询服务","pubDate":"2026-04-27","source":"新疆政府采购网","link":"http://www.ccgp.gov.cn","keywords":["造价咨询","全过程造价","医院建设"],"collectedAt":"2026-05-06","slot":"晚间","budget":"75万元/标包","description":"地区：新疆乌鲁木齐；采购单位：新疆医科大学第一附属医院；标包1、2各75万元；服务期3年"},{"id":333,"title":"云南省贵金属新材料控股集团股份有限公司造价咨询机构框架协议采购","pubDate":"2026-04-29","source":"中国招标投标公共服务平台","link":"http://m.toutiao.com/group/7634346001196646964/","keywords":["造价咨询","框架协议"],"collectedAt":"2026-05-06","slot":"晚间","description":"地区：云南昆明；采购单位：云南省贵金属新材料控股集团股份有限公司；入围3家；投标截止：2026-05-21 09:30"},{"id":332,"title":"江苏省高管中心2026年工程养护造价咨询项目","pubDate":"2026-04-13","source":"江苏政府采购网","link":"http://ccgp-jiangsu.gov.cn/jiangsu/js_cggg/details.html","keywords":["造价咨询","工程养护","高速公路"],"collectedAt":"2026-05-06","slot":"晚间","budget":"135.35万元","description":"地区：江苏；采购单位：江苏省高速公路经营管理中心；采购包1：73.76万元；采购包2：61.59万元；投标截止：2026-05-07 09:30"},{"id":331,"title":"宁波奉化中交智慧城二期项目造价咨询服务采购","pubDate":"2026-05-02","source":"采招网","link":"http://shanghai.gc-zb.com/nav_5_34_3609_678.html","keywords":["造价咨询","智慧城市"],"collectedAt":"2026-05-06","slot":"晚间","description":"地区：浙江宁波奉化；采购内容：中交智慧城二期项目造价咨询服务"},{"id":330,"title":"旌德县审计局2026-2028年政府投资建设项目造价咨询服务框架协议采购","pubDate":"2026-05-01","source":"安徽政府采购网","link":"http://shanghai.gc-zb.com/nav_5_34_3609_678.html","keywords":["造价咨询","框架协议","政府投资"],"collectedAt":"2026-05-06","slot":"晚间","budget":"框架协议","description":"地区：安徽旌德；采购单位：旌德县审计局；服务期：2026-2028年；封闭式框架协议采购"},{"id":329,"title":"安徽建工（肥西）新材料科技园项目造价咨询1标段招标公告","pubDate":"2026-05-03","source":"采招网","link":"http://shanghai.gc-zb.com/nav_5_34_3609_678.html","keywords":["造价咨询","新材料科技园"],"collectedAt":"2026-05-06","slot":"晚间","description":"地区：安徽合肥；采购单位：安徽建工安庆投发合肥建投；项目名称：安徽建工（肥西）新材料科技园项目"},{"id":328,"title":"省天然气公司2026-2028年造价咨询项目成交公告","pubDate":"2026-05-06","source":"电力集采招标网","link":"https://m.dljczb.com/wd-336/789/","keywords":["造价咨询","年度协议"],"collectedAt":"2026-05-06","slot":"晚间","description":"服务内容：省天然气公司2026-2028年造价咨询项目，服务期2年"},{"id":327,"title":"华润新能源（廉江）有限公司风电场项目全过程造价咨询服务","pubDate":"2026-05-06","source":"电力集采招标网","link":"https://m.dljczb.com/rd-78394/1/","keywords":["全过程造价","风电","造价咨询"],"collectedAt":"2026-05-06","slot":"晚间","description":"地区：广东廉江；采购单位：华润新能源（廉江）有限公司；服务内容：风电场项目全过程造价咨询服务"},{"id":326,"title":"中国浦东干部学院建设工程项目造价咨询服务项目竞争性磋商（第二次）","pubDate":"2026-05-06","source":"中国政府采购网","link":"http://www.ccgp.gov.cn/cggg/zygg/jzxcs/202605/t20260506_26510779.htm","keywords":["造价咨询","建设工程"],"collectedAt":"2026-05-06","slot":"晚间","budget":"7万元","description":"地区：上海浦东；采购单位：中国浦东干部学院；服务内容：建设工程项目造价咨询服务；响应文件截止：2026-05-18 13:30"},{"id":325,"title":"山东曲阜市伟业路建设工程EPC项目","pubDate":"2026-05-01","source":"济宁市公共资源交易网","link":"http://m.toutiao.com/group/7634841262415200787/","keywords":["EPC","全过程咨询","项目管理"],"collectedAt":"2026-05-06","slot":"下午","budget":"1.04亿元","description":"地区：山东曲阜；招标单位：曲阜市住房和城乡建设局；项目包含道路、桥梁、排水、景观绿化、交通及附属设施；投标截止：2026-05-26 9:00"},{"id":324,"title":"运营项目2026~2027年度全过程工程咨询服务","pubDate":"2026-04-29","source":"采招网","link":"https://m.bidcenter.com.cn/news-1-416819253.html","keywords":["全过程咨询","项目管理","造价咨询","工程监理"],"collectedAt":"2026-05-06","slot":"下午","budget":"自筹资金","description":"地区：陕西西安；采购单位：西安市保障房管理有限公司；服务内容：维修、提升改造、设备采购及安装等全过程工程咨询服务；投标截止：2026-05-20"},{"id":323,"title":"某部全过程工程咨询单位选取","pubDate":"2026-04-30","source":"采招网","link":"https://m.bidcenter.com.cn/news-6-417013755.html","keywords":["全过程咨询","项目管理","工程监理"],"collectedAt":"2026-05-06","slot":"下午","description":"地区：湖北；采购单位：某部；资质要求：工程监理、工程设计建筑行业（建筑工程）甲级及以上"},{"id":322,"title":"2026年5月政府投资项目工程造价审核服务采购意向","pubDate":"2026-04-29","source":"采招网","link":"https://m.bidcenter.com.cn/news-2-416663693.html","keywords":["造价咨询","造价审核"],"collectedAt":"2026-05-06","slot":"下午","budget":"180万元","description":"地区：广东某地；采购单位：某财政局；服务内容：政府投资项目工程预算、竣工结算审核；采用框架协议方式，合约两年；预计采购时间：2026年5月"},{"id":321,"title":"云南省贵金属新材料集团造价咨询机构框架协议采购","pubDate":"2026-04-29","source":"中国招标投标公共服务平台","link":"http://m.toutiao.com/group/7634346001196646964/","keywords":["造价咨询","框架协议"],"collectedAt":"2026-05-06","slot":"下午","budget":"框架协议","description":"地区：云南昆明；采购单位：云南省贵金属新材料控股集团；服务内容：建设项目造价咨询、零星修缮服务造价咨询；入围3家；投标截止：2026-05-21 9:30"},{"id":320,"title":"湖南省交通运输厅2026年造价审查及咨询服务专项","pubDate":"2026-04-22","source":"湖南省政府采购网","link":"https://m.bidcenter.com.cn/news-1-415475825.html","keywords":["造价咨询","造价审查","咨询服务"],"collectedAt":"2026-05-06","slot":"下午","budget":"45万元","description":"地区：湖南长沙；采购单位：湖南省交通运输厅交通建设造价管理站；服务期1年；投标截止：2026-05-15 10:00"},{"id":319,"title":"湖南长沙2026年造价审查及咨询服务专项","pubDate":"2026-04-22","source":"湖南省政府采购网","link":"https://m.bidcenter.com.cn/news-1-415475825.html","keywords":["造价咨询","造价审查"],"collectedAt":"2026-05-06","slot":"下午","budget":"45万元","description":"地区：湖南长沙；采购单位：湖南省交通运输厅交通建设造价管理站；服务内容：造价审查及咨询服务；投标截止：2026-05-15"},{"id":318,"title":"北京林业大学雄安校区全过程造价咨询服务（四标段）","pubDate":"2026-05-16","source":"中国政府采购网","link":"http://www.ccgp.gov.cn/cggg/zygg/gkzb/202505/t20250516_24612768.htm","keywords":["全过程咨询","造价咨询","项目管理"],"collectedAt":"2026-05-06","slot":"下午","budget":"429.82万元","description":"地区：北京；采购单位：北京林业大学；服务内容：工程量清单及招标控制价编制、合同价重计量、施工过程造价咨询、竣工结算审核；开标：2026-06-11"},{"id":317,"title":"范县财政局工程造价咨询服务框架协议采购","pubDate":"2026-02-11","source":"河南省政府采购网","link":"https://zfcg.henan.gov.cn/cmsweb81e27e/fanxian/rootfiles/2026/02/11/48594ca1699d409cb8c338db0f2d0537.pdf","keywords":["造价咨询","框架协议"],"collectedAt":"2026-05-06","slot":"早间","budget":"240万元","description":"地区：河南范县；采购单位：范县财政局；采购内容：工程造价咨询服务入围12家单位；服务期2年；特定要求：项目负责人须具有国家注册造价工程师资格+高级职称"},{"id":316,"title":"江门市2026-2029年财政投资建设工程造价评审服务","pubDate":"2026-03-05","source":"中国政府采购网","link":"http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260305_26235418.htm","keywords":["造价咨询","造价评审","全过程咨询"],"collectedAt":"2026-05-06","slot":"早间","budget":"1560万元","description":"地区：广东江门；采购单位：江门市财政投资评审中心；10个采购包，总预算1560万；服务内容：基建项目工程造价预结算评审及工程造价管理规范编制；服务期3年"},{"id":315,"title":"连州市财政性资金投资建设工程造价咨询服务采购","pubDate":"2026-03-16","source":"中国政府采购网","link":"http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260316_26275733.htm","keywords":["造价咨询","造价评审"],"collectedAt":"2026-05-06","slot":"早间","budget":"1000万元","description":"地区：广东连州；采购单位：连州市财政局投资审核中心；分3个采购包，各400万/300万/300万；服务期2年；开标：2026-04-08"},{"id":314,"title":"成都市锦江区2026-2029年工程咨询及造价咨询服务采购","pubDate":"2026-03-26","source":"中国政府采购网","link":"http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260326_26318667.htm","keywords":["造价咨询","工程咨询","全过程咨询"],"collectedAt":"2026-05-06","slot":"早间","budget":"400万元/年","description":"地区：四川成都；采购单位：成都市锦江区发展和改革局；采购包1：工程咨询类评审咨询服务160万/年；采购包2：工程造价类评审咨询服务240万/年；服务期3年；开标：2026-04-20"},{"id":311,"title":"运营项目2026~2027年度全过程工程咨询服务","pubDate":"2026-04-29","source":"采招网","link":"https://m.bidcenter.com.cn/news-1-416819253.html","keywords":["全过程咨询","项目管理","造价咨询","工程监理"],"collectedAt":"2026-05-06","slot":"早间","budget":"自筹资金","description":"地区：陕西西安；采购单位：西安市保障房管理有限公司；服务内容：维修、提升改造、设备采购及安装等全过程工程咨询服务，包含项目管理、工程监理、全过程造价咨询；投标截止：2026-05-20"},{"id":310,"title":"贵州省某单位2026年度招标代理服务采购","pubDate":"2026-04-27","source":"采招网","link":"https://m.bidcenter.com.cn/news-1-416170320.html","keywords":["招标代理"],"collectedAt":"2026-05-05","slot":"晚间","description":"地区：贵州贵阳；采购单位：贵州省某单位；采购内容：2026年度招标代理服务"},{"id":309,"title":"2026年度分布式光储项目过程咨询服务","pubDate":"2026-04-27","source":"阜阳交通","link":"https://m.bidcenter.com.cn/news-1-416241914.html","keywords":["咨询服务","项目管理"],"collectedAt":"2026-05-05","slot":"晚间","description":"地区：安徽阜阳；采购单位：阜阳交通投资有限公司；服务内容：分布式光储资源开发+EPC项目全过程咨询服务"},{"id":308,"title":"某学校2026-2028学年工程类招标代理机构入围供应商招标","pubDate":"2026-04-29","source":"浙采网","link":"https://m.bidcenter.com.cn/news-1-416830069.html","keywords":["招标代理"],"collectedAt":"2026-05-05","slot":"晚间","budget":"服务期3年","description":"地区：浙江宁波；采购单位：某学校；采购内容：2026-2028学年工程类招标代理机构入围供应商；服务期限：2026年9月1日-2029年8月31日"},{"id":307,"title":"某部全过程工程咨询单位选取","pubDate":"2026-04-30","source":"采招网","link":"https://m.bidcenter.com.cn/news-6-417013755.html","keywords":["全过程咨询","项目管理","工程监理"],"collectedAt":"2026-05-05","slot":"晚间","description":"地区：湖北；采购单位：某部；资质要求：具备工程监理、工程设计建筑行业（建筑工程）甲级及以上企业资质"},{"id":306,"title":"陈云纪念馆2026年度政府采购招标代理服务项目","pubDate":"2026-05-05","source":"政采云","link":"https://www.bidcenter.com.cn/zhaobiao/areanew_1079_310200_1/","keywords":["招标代理"],"collectedAt":"2026-05-05","slot":"晚间","description":"地区：上海；采购单位：陈云纪念馆；服务内容：负责服务期限内陈云纪念馆各类政府采购货物、服务、工程招标代理服务"},{"id":305,"title":"陈云纪念馆2026年度造价咨询服务项目","pubDate":"2026-05-05","source":"政采云","link":"https://www.bidcenter.com.cn/zhaobiao/areanew_1079_310200_1/","keywords":["造价咨询","全过程咨询"],"collectedAt":"2026-05-05","slot":"晚间","budget":"2005元","description":"地区：上海；采购单位：陈云纪念馆；服务内容：工程量清单控制价编审、全过程造价控制、结算审核等与工程造价相关服务"},{"id":304,"title":"中华小学2026-2027年招标代理机构入围比选项目","pubDate":"2026-05-05","source":"昆明","link":"https://m.bidcenter.com.cn/news-1-417215755.html","keywords":["招标代理"],"collectedAt":"2026-05-05","slot":"晚间","budget":"服务期2年","description":"地区：云南昆明；采购单位：中华小学；采购内容：2026-2027年工程类、货物类、服务类等招标代理服务；入围单位数量：3家；响应文件递交截止：2026年5月14日13:45"}]};
-
-let currentPage = 1;
-const pageSize = 20;
-let filteredData = [...DATA.announcements];
-
-function renderAnnouncements(page) {
-    const list = document.getElementById('announcementsList');
-    const start = (page - 1) * pageSize;
-    const end = start + pageSize;
-    const pageData = filteredData.slice(start, end);
-    
-    if (pageData.length === 0) {
-        list.innerHTML = '<div class="no-data">暂无匹配的公告</div>';
-        return;
+    <script>
+        const announcementsData = [
+    {
+        "id": 341,
+        "title": "上海高校招标代理、造价咨询服务入围采购项目",
+        "pubDate": "2026-05-06",
+        "source": "采招网",
+        "link": "https://m.bidcenter.com.cn/news-1-417405595.html",
+        "keywords": [
+            "招标代理",
+            "造价咨询"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "下午",
+        "budget": "三年预计600万元",
+        "description": "地区：上海；采购单位：上海高校；招标内容：招标代理、造价咨询服务入围；入围2家供应商；服务期限三年，合同一年一签；投标截止：2026-05-27 10:00"
+    },
+    {
+        "id": 342,
+        "title": "义乌市2026年度招标代理和造价咨询服务采购项目",
+        "pubDate": "2026-05-06",
+        "source": "采招网",
+        "link": "https://m.bidcenter.com.cn/news-1-417366169.html",
+        "keywords": [
+            "招标代理",
+            "造价咨询"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "下午",
+        "budget": "单项不超过5万元",
+        "description": "地区：浙江金华义乌；采购单位：义乌市；采购内容：2026年度招标代理（含施工、货物及服务采购等）和造价咨询（含工程量清单、预算、结算审核等）；服务期限1年；投标截止：2026-05-13 13:00"
+    },
+    {
+        "id": 343,
+        "title": "某工程全过程工程咨询（二次）招标公告",
+        "pubDate": "2026-05-07",
+        "source": "中国招标投标公共服务平台",
+        "link": "https://www.ctex.cn/sichuan/search?keyword=%E5%85%A8%E8%BF%81%E7%A8%8B%E5%B7%A5%E7%A8%8B",
+        "keywords": [
+            "全过程咨询",
+            "项目管理",
+            "造价咨询",
+            "工程监理"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "下午",
+        "description": "地区：吉林长春；建设规模：食堂及附属设施，营区内部分用房外窗节能改造；服务范围：项目管理、设计、造价咨询、工程监理；截止时间：2026-05-15"
+    },
+    {
+        "id": 344,
+        "title": "某单位2026年度工程项目全过程咨询服务采购",
+        "pubDate": "2026-05-07",
+        "source": "武汉市招标网",
+        "link": "https://wuhan.hangnian.com/info-69d8a925f1200000f8005592.html",
+        "keywords": [
+            "全过程咨询",
+            "项目管理",
+            "造价咨询",
+            "招标代理"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "下午",
+        "description": "地区：湖北武汉；采购单位：某单位；服务内容：全过程项目管理、投资咨询、工程勘察、工程设计、造价咨询、工程招标代理、工程监理；合同期限1年"
+    },
+    {
+        "id": 345,
+        "title": "巢湖市审计局2026年度政府投资建设工程造价咨询服务（第一批）",
+        "pubDate": "2026-05-07",
+        "source": "安徽合肥公共资源交易网",
+        "link": "https://zfcg.ah.gov.cn/site/detail?articleId=qLcnXsF+inY7J7Bd6aCAvg==",
+        "keywords": [
+            "造价咨询",
+            "政府投资",
+            "框架协议"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "下午",
+        "budget": "180万元（5包各36万元）",
+        "description": "地区：安徽合肥巢湖；采购单位：巢湖市审计局；采购内容：工程造价咨询服务；分5个采购包，每包36万；专门面向中小企业；投标截止：2026-05-20 09:00"
+    },
+    {
+        "id": 346,
+        "title": "某单位全过程工程咨询单位选取",
+        "pubDate": "2026-05-07",
+        "source": "采招网",
+        "link": "https://m.bidcenter.com.cn/news-1-416236490.html",
+        "keywords": [
+            "全过程咨询",
+            "项目管理",
+            "造价咨询",
+            "工程监理"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "下午",
+        "description": "地区：湖北武汉；采购单位：某部；服务内容：项目管理、决策咨询、勘察设计、招标代理、工程监理、造价咨询；服务期12个月；选取2家入围单位；投标截止：2026-05-20 09:30"
+    },
+    {
+        "id": 347,
+        "title": "某学校2026-2027年招标代理服务机构入围比选",
+        "pubDate": "2026-05-07",
+        "source": "中国采购与招标网",
+        "link": "https://sc.bidcenter.com.cn/diqucontent-416113394-1.html",
+        "keywords": [
+            "招标代理",
+            "入围比选"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "下午",
+        "description": "地区：四川资阳；采购单位：某学校；采购内容：2026~2027年度招标代理机构入围；入围2家；服务期限1年"
+    },
+    {
+        "id": 348,
+        "title": "国核电力规划设计研究院发电项目常规岛造价咨询辅助服务招标",
+        "pubDate": "2026-04-30",
+        "source": "采招网",
+        "link": "https://m.dljczb.com/wd-336/789/",
+        "keywords": [
+            "造价咨询",
+            "电力项目"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "下午",
+        "description": "采购单位：国核电力规划设计研究院有限公司；服务内容：某电力发电项目常规岛及BOP造价咨询辅助服务"
+    },
+    {
+        "id": 349,
+        "title": "新疆医科大学第一附属医院建设工程造价咨询服务",
+        "pubDate": "2026-04-27",
+        "source": "新疆政府采购网",
+        "link": "http://www.ccgp.gov.cn",
+        "keywords": [
+            "造价咨询",
+            "全过程造价",
+            "医院建设"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "下午",
+        "budget": "75万元/标包",
+        "description": "地区：新疆乌鲁木齐；采购单位：新疆医科大学第一附属医院；标包1、2各75万元；服务期3年"
+    },
+    {
+        "id": 350,
+        "title": "云南省贵金属新材料控股集团股份有限公司造价咨询机构框架协议采购",
+        "pubDate": "2026-04-29",
+        "source": "中国招标投标公共服务平台",
+        "link": "http://m.toutiao.com/group/7634346001196646964/",
+        "keywords": [
+            "造价咨询",
+            "框架协议"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "下午",
+        "description": "地区：云南昆明；采购单位：云南省贵金属新材料控股集团股份有限公司；入围3家；投标截止：2026-05-21 09:30"
+    },
+    {
+        "id": 340,
+        "title": "某工程全过程工程咨询（二次）招标公告",
+        "pubDate": "2026-05-07",
+        "source": "采招网",
+        "link": "https://m.bidcenter.com.cn/news-1-415197740.html",
+        "keywords": [
+            "全过程咨询",
+            "项目管理",
+            "造价咨询",
+            "工程监理"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "上午",
+        "description": "地区：吉林长春；建设规模：食堂及附属设施，营区内部分用房外窗节能改造；服务范围：项目管理、设计、造价咨询、工程监理；截止时间：2026-05-15"
+    },
+    {
+        "id": 339,
+        "title": "某单位2026年度工程项目全过程咨询服务采购",
+        "pubDate": "2026-05-07",
+        "source": "武汉市招标网",
+        "link": "https://wuhan.hangnian.com/info-69d8a925f1200000f8005592.html",
+        "keywords": [
+            "全过程咨询",
+            "项目管理",
+            "造价咨询",
+            "招标代理"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "上午",
+        "description": "地区：湖北武汉；采购单位：某单位；服务内容：全过程项目管理、投资咨询、工程勘察、工程设计、造价咨询、工程招标代理、工程监理；合同期限1年；截止时间：2026-05-07"
+    },
+    {
+        "id": 338,
+        "title": "巢湖市审计局2026年度政府投资建设工程造价咨询服务（第一批）",
+        "pubDate": "2026-05-07",
+        "source": "安徽合肥公共资源交易网",
+        "link": "https://zfcg.ah.gov.cn/site/detail?articleId=qLcnXsF+inY7J7Bd6aCAvg==",
+        "keywords": [
+            "造价咨询",
+            "政府投资",
+            "框架协议"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "上午",
+        "budget": "180万元（5包各36万元）",
+        "description": "地区：安徽合肥巢湖；采购单位：巢湖市审计局；采购内容：工程造价咨询服务；分5个采购包，每包36万；专门面向中小企业；投标截止：2026-05-20 09:00"
+    },
+    {
+        "id": 337,
+        "title": "某单位全过程工程咨询单位选取",
+        "pubDate": "2026-05-07",
+        "source": "采招网",
+        "link": "https://m.bidcenter.com.cn/news-1-416236490.html",
+        "keywords": [
+            "全过程咨询",
+            "项目管理",
+            "造价咨询",
+            "工程监理"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "上午",
+        "description": "地区：湖北武汉；采购单位：某部；服务内容：项目管理、决策咨询、勘察设计、招标代理、工程监理、造价咨询；服务期12个月；选取2家入围单位；投标截止：2026-05-20 09:30"
+    },
+    {
+        "id": 336,
+        "title": "某学校2026-2027年招标代理服务机构入围比选",
+        "pubDate": "2026-05-07",
+        "source": "中国采购与招标网",
+        "link": "https://sc.bidcenter.com.cn/diqucontent-416113394-1.html",
+        "keywords": [
+            "招标代理",
+            "入围比选"
+        ],
+        "collectedAt": "2026-05-07",
+        "slot": "上午",
+        "description": "地区：四川资阳；采购单位：某学校；采购内容：2026~2027年度招标代理机构入围；入围2家；服务期限1年；截止时间：2026-05-07 15:00"
+    },
+    {
+        "id": 335,
+        "title": "国核电力规划设计研究院发电项目常规岛造价咨询辅助服务招标",
+        "pubDate": "2026-04-30",
+        "source": "采招网",
+        "link": "https://m.dljczb.com/wd-336/789/",
+        "keywords": [
+            "造价咨询",
+            "电力项目"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "晚间",
+        "description": "采购单位：国核电力规划设计研究院有限公司；服务内容：某电力发电项目常规岛及BOP造价咨询辅助服务"
+    },
+    {
+        "id": 334,
+        "title": "新疆医科大学第一附属医院建设工程造价咨询服务",
+        "pubDate": "2026-04-27",
+        "source": "新疆政府采购网",
+        "link": "http://www.ccgp.gov.cn",
+        "keywords": [
+            "造价咨询",
+            "全过程造价",
+            "医院建设"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "晚间",
+        "budget": "75万元/标包",
+        "description": "地区：新疆乌鲁木齐；采购单位：新疆医科大学第一附属医院；标包1、2各75万元；服务期3年"
+    },
+    {
+        "id": 333,
+        "title": "云南省贵金属新材料控股集团股份有限公司造价咨询机构框架协议采购",
+        "pubDate": "2026-04-29",
+        "source": "中国招标投标公共服务平台",
+        "link": "http://m.toutiao.com/group/7634346001196646964/",
+        "keywords": [
+            "造价咨询",
+            "框架协议"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "晚间",
+        "description": "地区：云南昆明；采购单位：云南省贵金属新材料控股集团股份有限公司；入围3家；投标截止：2026-05-21 09:30"
+    },
+    {
+        "id": 332,
+        "title": "江苏省高管中心2026年工程养护造价咨询项目",
+        "pubDate": "2026-04-13",
+        "source": "江苏政府采购网",
+        "link": "http://ccgp-jiangsu.gov.cn/jiangsu/js_cggg/details.html",
+        "keywords": [
+            "造价咨询",
+            "工程养护",
+            "高速公路"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "晚间",
+        "budget": "135.35万元",
+        "description": "地区：江苏；采购单位：江苏省高速公路经营管理中心；采购包1：73.76万元；采购包2：61.59万元；投标截止：2026-05-07 09:30"
+    },
+    {
+        "id": 331,
+        "title": "宁波奉化中交智慧城二期项目造价咨询服务采购",
+        "pubDate": "2026-05-02",
+        "source": "采招网",
+        "link": "http://shanghai.gc-zb.com/nav_5_34_3609_678.html",
+        "keywords": [
+            "造价咨询",
+            "智慧城市"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "晚间",
+        "description": "地区：浙江宁波奉化；采购内容：中交智慧城二期项目造价咨询服务"
+    },
+    {
+        "id": 330,
+        "title": "旌德县审计局2026-2028年政府投资建设项目造价咨询服务框架协议采购",
+        "pubDate": "2026-05-01",
+        "source": "安徽政府采购网",
+        "link": "http://shanghai.gc-zb.com/nav_5_34_3609_678.html",
+        "keywords": [
+            "造价咨询",
+            "框架协议",
+            "政府投资"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "晚间",
+        "budget": "框架协议",
+        "description": "地区：安徽旌德；采购单位：旌德县审计局；服务期：2026-2028年；封闭式框架协议采购"
+    },
+    {
+        "id": 329,
+        "title": "安徽建工（肥西）新材料科技园项目造价咨询1标段招标公告",
+        "pubDate": "2026-05-03",
+        "source": "采招网",
+        "link": "http://shanghai.gc-zb.com/nav_5_34_3609_678.html",
+        "keywords": [
+            "造价咨询",
+            "新材料科技园"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "晚间",
+        "description": "地区：安徽合肥；采购单位：安徽建工安庆投发合肥建投；项目名称：安徽建工（肥西）新材料科技园项目"
+    },
+    {
+        "id": 328,
+        "title": "省天然气公司2026-2028年造价咨询项目成交公告",
+        "pubDate": "2026-05-06",
+        "source": "电力集采招标网",
+        "link": "https://m.dljczb.com/wd-336/789/",
+        "keywords": [
+            "造价咨询",
+            "年度协议"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "晚间",
+        "description": "服务内容：省天然气公司2026-2028年造价咨询项目，服务期2年"
+    },
+    {
+        "id": 327,
+        "title": "华润新能源（廉江）有限公司风电场项目全过程造价咨询服务",
+        "pubDate": "2026-05-06",
+        "source": "电力集采招标网",
+        "link": "https://m.dljczb.com/rd-78394/1/",
+        "keywords": [
+            "全过程造价",
+            "风电",
+            "造价咨询"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "晚间",
+        "description": "地区：广东廉江；采购单位：华润新能源（廉江）有限公司；服务内容：风电场项目全过程造价咨询服务"
+    },
+    {
+        "id": 326,
+        "title": "中国浦东干部学院建设工程项目造价咨询服务项目竞争性磋商（第二次）",
+        "pubDate": "2026-05-06",
+        "source": "中国政府采购网",
+        "link": "http://www.ccgp.gov.cn/cggg/zygg/jzxcs/202605/t20260506_26510779.htm",
+        "keywords": [
+            "造价咨询",
+            "建设工程"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "晚间",
+        "budget": "7万元",
+        "description": "地区：上海浦东；采购单位：中国浦东干部学院；服务内容：建设工程项目造价咨询服务；响应文件截止：2026-05-18 13:30"
+    },
+    {
+        "id": 325,
+        "title": "山东曲阜市伟业路建设工程EPC项目",
+        "pubDate": "2026-05-01",
+        "source": "济宁市公共资源交易网",
+        "link": "http://m.toutiao.com/group/7634841262415200787/",
+        "keywords": [
+            "EPC",
+            "全过程咨询",
+            "项目管理"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "下午",
+        "budget": "1.04亿元",
+        "description": "地区：山东曲阜；招标单位：曲阜市住房和城乡建设局；项目包含道路、桥梁、排水、景观绿化、交通及附属设施；投标截止：2026-05-26 9:00"
+    },
+    {
+        "id": 324,
+        "title": "运营项目2026~2027年度全过程工程咨询服务",
+        "pubDate": "2026-04-29",
+        "source": "采招网",
+        "link": "https://m.bidcenter.com.cn/news-1-416819253.html",
+        "keywords": [
+            "全过程咨询",
+            "项目管理",
+            "造价咨询",
+            "工程监理"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "下午",
+        "budget": "自筹资金",
+        "description": "地区：陕西西安；采购单位：西安市保障房管理有限公司；服务内容：维修、提升改造、设备采购及安装等全过程工程咨询服务；投标截止：2026-05-20"
+    },
+    {
+        "id": 323,
+        "title": "某部全过程工程咨询单位选取",
+        "pubDate": "2026-04-30",
+        "source": "采招网",
+        "link": "https://m.bidcenter.com.cn/news-6-417013755.html",
+        "keywords": [
+            "全过程咨询",
+            "项目管理",
+            "工程监理"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "下午",
+        "description": "地区：湖北；采购单位：某部；资质要求：工程监理、工程设计建筑行业（建筑工程）甲级及以上"
+    },
+    {
+        "id": 322,
+        "title": "2026年5月政府投资项目工程造价审核服务采购意向",
+        "pubDate": "2026-04-29",
+        "source": "采招网",
+        "link": "https://m.bidcenter.com.cn/news-2-416663693.html",
+        "keywords": [
+            "造价咨询",
+            "造价审核"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "下午",
+        "budget": "180万元",
+        "description": "地区：广东某地；采购单位：某财政局；服务内容：政府投资项目工程预算、竣工结算审核；采用框架协议方式，合约两年；预计采购时间：2026年5月"
+    },
+    {
+        "id": 321,
+        "title": "云南省贵金属新材料集团造价咨询机构框架协议采购",
+        "pubDate": "2026-04-29",
+        "source": "中国招标投标公共服务平台",
+        "link": "http://m.toutiao.com/group/7634346001196646964/",
+        "keywords": [
+            "造价咨询",
+            "框架协议"
+        ],
+        "collectedAt": "2026-05-06",
+        "slot": "下午",
+        "budget": "框架协议",
+        "description": "地区：云南昆明；采购单位：云南省贵金属新材料控股集团；服务内容：建设项目造价咨询、零星修缮服务造价咨询；入围3家；投标截止：2026-05-21 9:30"
     }
-    
-    list.innerHTML = pageData.map(item => {
-        const slotClass = item.slot === '上午' ? 'tag-slot-morning' : item.slot === '下午' ? 'tag-slot-afternoon' : 'tag-slot-evening';
-        const budgetHtml = item.budget ? `<span class="card-budget">💰 ${item.budget}</span>` : '';
-        const keywordsHtml = item.keywords.map(k => `<span class="keyword">${k}</span>`).join('');
-        return `
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title" onclick="window.open('${item.link}', '_blank')">${item.title}</div>
-                    ${budgetHtml}
-                </div>
-                <div class="card-meta">
-                    <span>📅 ${item.pubDate}</span>
-                    <span>📍 ${item.source}</span>
-                    <span>🕐 ${item.slot}</span>
-                    <span class="tag ${slotClass}">${item.slot}</span>
-                </div>
-                <div class="card-keywords">${keywordsHtml}</div>
-                <div class="card-desc">${item.description}</div>
-            </div>
-        `;
-    }).join('');
-    
-    document.getElementById('filterCount').textContent = filteredData.length;
-    renderPagination();
-}
-
-function renderPagination() {
-    const totalPages = Math.ceil(filteredData.length / pageSize);
-    const pagination = document.getElementById('pagination');
-    let html = '';
-    
-    html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goPage(${currentPage - 1})">上一页</button>`;
-    
-    for (let i = 1; i <= Math.min(totalPages, 5); i++) {
-        html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
-    }
-    
-    if (totalPages > 5) {
-        html += `<span style="padding: 8px;">...</span>`;
-        html += `<button onclick="goPage(${totalPages})">${totalPages}</button>`;
-    }
-    
-    html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goPage(${currentPage + 1})">下一页</button>`;
-    
-    pagination.innerHTML = html;
-}
-
-function goPage(page) {
-    const totalPages = Math.ceil(filteredData.length / pageSize);
-    if (page < 1 || page > totalPages) return;
-    currentPage = page;
-    renderAnnouncements(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function filterAnnouncements() {
-    const keyword = document.getElementById('searchKeyword').value.toLowerCase();
-    const type = document.getElementById('filterType').value;
-    const source = document.getElementById('filterSource').value;
-    const date = document.getElementById('filterDate').value;
-    
-    filteredData = DATA.announcements.filter(item => {
-        const matchKeyword = !keyword || item.title.toLowerCase().includes(keyword) || item.description.toLowerCase().includes(keyword);
-        const matchType = !type || item.keywords.includes(type);
-        const matchSource = !source || item.source.includes(source);
-        const matchDate = !date || item.pubDate === date;
-        return matchKeyword && matchType && matchSource && matchDate;
-    });
-    
-    currentPage = 1;
-    renderAnnouncements(currentPage);
-}
-
-function resetFilters() {
-    document.getElementById('searchKeyword').value = '';
-    document.getElementById('filterType').value = '';
-    document.getElementById('filterSource').value = '';
-    document.getElementById('filterDate').value = '';
-    filteredData = [...DATA.announcements];
-    currentPage = 1;
-    renderAnnouncements(currentPage);
-}
-
-function exportCSV() {
-    const headers = ['ID', '标题', '发布日期', '来源', '关键词', '预算', '描述', '链接'];
-    const rows = filteredData.map(item => [
-        item.id, item.title, item.pubDate, item.source, 
-        item.keywords.join(';'), item.budget || '', item.description, item.link
-    ]);
-    
-    const csvContent = [headers, ...rows].map(r => r.map(v => `"${(v || '').replace(/"/g, '""')}"`).join(',')).join('\n');
-    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `招标公告_${new Date().toISOString().slice(0,10)}.csv`;
-    link.click();
-}
-
-document.getElementById('totalCount').textContent = DATA.totalCount;
-document.getElementById('updateTime').textContent = DATA.lastUpdate.split(' ')[0];
-renderAnnouncements(currentPage);
-</script>
+];
+        
+        let filteredData = [...announcementsData];
+        let currentPage = 1;
+        const pageSize = 50;
+        
+        function renderTable() {
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredData.slice(start, end);
+            
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = pageData.map(ann => {
+                const keywords = ann.keywords ? ann.keywords.map(k => `<span class="keyword">{k}</span>`).join('') : '';
+                const budget = ann.budget ? `<span class="budget">{ann.budget}</span>` : '';
+                return `<tr>
+                    <td>{ann.id}</td>
+                    <td>{ann.pubDate}</td>
+                    <td><a href="{ann.link}" target="_blank">{ann.title}</a></td>
+                    <td class="source">{ann.source}</td>
+                    <td>{keywords}</td>
+                    <td>{budget}</td>
+                    <td class="description">{ann.description || ''}</td>
+                </tr>`;
+            }).join('');
+            
+            const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
+            document.getElementById('pageInfo').textContent = `第 ${currentPage} 页，共 ${totalPages} 页 (共 ${filteredData.length} 条)`;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+        }
+        
+        function applyFilters() {
+            const keyword = document.getElementById('keywordFilter').value.toLowerCase();
+            const source = document.getElementById('sourceFilter').value;
+            const date = document.getElementById('dateFilter').value;
+            
+            filteredData = announcementsData.filter(ann => {
+                const matchKeyword = !keyword || 
+                    (ann.title && ann.title.toLowerCase().includes(keyword)) ||
+                    (ann.description && ann.description.toLowerCase().includes(keyword)) ||
+                    (ann.keywords && ann.keywords.some(k => k.toLowerCase().includes(keyword)));
+                const matchSource = !source || ann.source === source;
+                const matchDate = !date || ann.pubDate === date;
+                return matchKeyword && matchSource && matchDate;
+            });
+            
+            currentPage = 1;
+            renderTable();
+        }
+        
+        function resetFilters() {
+            document.getElementById('keywordFilter').value = '';
+            document.getElementById('sourceFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            filteredData = [...announcementsData];
+            currentPage = 1;
+            renderTable();
+        }
+        
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+        
+        function nextPage() {
+            const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        }
+        
+        function exportCSV() {
+            const headers = ['ID', '日期', '标题', '来源', '关键词', '预算', '描述', '链接'];
+            const rows = filteredData.map(ann => [
+                ann.id, ann.pubDate, ann.title, ann.source,
+                (ann.keywords || []).join(';'), ann.budget || '', ann.description || '', ann.link
+            ]);
+            
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.map(cell => `\"${String(cell).replace(/\"/g, '\"\"')}\"`).join(',') + '\n';
+            });
+            
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `招标公告_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+        
+        function exportJSON() {
+            const blob = new Blob([JSON.stringify(filteredData, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `招标公告_${new Date().toISOString().slice(0,10)}.json`;
+            link.click();
+        }
+        
+        // 初始化
+        renderTable();
+    </script>
 </body>
 </html>
