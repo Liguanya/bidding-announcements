@@ -49,21 +49,53 @@ def is_industry_related(text):
     text = text or ''
     return any(kw in text for kw in INDUSTRY_KEYWORDS)
 
+# 2026年法定节假日
+HOLIDAYS_2026 = [
+    # 元旦
+    datetime(2026, 1, 1),
+    # 春节
+    datetime(2026, 2, 15), datetime(2026, 2, 16), datetime(2026, 2, 17),
+    datetime(2026, 2, 18), datetime(2026, 2, 19), datetime(2026, 2, 20), datetime(2026, 2, 21),
+    # 清明节
+    datetime(2026, 4, 4), datetime(2026, 4, 5), datetime(2026, 4, 6),
+    # 劳动节
+    datetime(2026, 5, 1), datetime(2026, 5, 2), datetime(2026, 5, 3),
+    datetime(2026, 5, 4), datetime(2026, 5, 5),
+    # 端午节（假设）
+    datetime(2026, 6, 19), datetime(2026, 6, 20), datetime(2026, 6, 21),
+    # 中秋节（假设）
+    datetime(2026, 9, 25), datetime(2026, 9, 26), datetime(2026, 9, 27),
+    # 国庆节（假设）
+    datetime(2026, 10, 1), datetime(2026, 10, 2), datetime(2026, 10, 3),
+    datetime(2026, 10, 4), datetime(2026, 10, 5), datetime(2026, 10, 6), datetime(2026, 10, 7),
+]
+
+def is_workday(date_obj):
+    """判断是否为工作日（排除周末和法定节假日）"""
+    if date_obj.weekday() >= 5:
+        return False
+    # 统一用 date() 比较，避免时间部分不一致导致节假日判断失败
+    check_date = date_obj.date() if hasattr(date_obj, 'date') else date_obj
+    holiday_dates = [h.date() if hasattr(h, 'date') else h for h in HOLIDAYS_2026]
+    if check_date in holiday_dates:
+        return False
+    return True
+
 def is_within_working_days(date_str, n=5):
-    """判断日期是否在N个工作日内"""
+    """判断日期是否在N个工作日内（正确考虑法定节假日）"""
     if not date_str:
         return False
     try:
         pub_date = datetime.strptime(date_str.strip()[:10], '%Y-%m-%d')
         today = datetime.now()
         
-        # 计算N个工作日前的日期
+        # 计算N个工作日前的日期（排除节假日）
         count = 0
         days_ago = 0
         while count < n:
             days_ago += 1
             check_date = today - timedelta(days=days_ago)
-            if check_date.weekday() < 5:
+            if is_workday(check_date):
                 count += 1
         
         start_date = today - timedelta(days=days_ago)
