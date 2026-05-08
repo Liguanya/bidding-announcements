@@ -231,6 +231,10 @@
                     <div class="stat-label">河北地区</div>
                     <div class="stat-value" id="hbCount">-</div>
                 </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #e53935, #c62828);">
+                    <div class="stat-label">北京地区</div>
+                    <div class="stat-value" id="bjCount">-</div>
+                </div>
             </div>
         </div>
         
@@ -317,6 +321,7 @@
         
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
+            filteredData = [...EMBEDDED_DATA.announcements];
             initStats();
             initFilters();
             initSearch();
@@ -349,6 +354,14 @@
                 (a.source && a.source.includes('河北'))
             ).length;
             document.getElementById('hbCount').textContent = hbCount;
+            
+            // 北京地区
+            const bjDistricts = ['北京', '朝阳', '顺义', '通州', '延庆', '密云', '平谷', '亦庄', '怀柔', '门头沟', '房山', '大兴', '昌平', '海淀', '石景山', '丰台'];
+            const bjCount = announcements.filter(a => {
+                const text = [a.description, a.source, a.title].filter(Boolean).join('');
+                return bjDistricts.some(district => text.includes(district));
+            }).length;
+            document.getElementById('bjCount').textContent = bjCount;
         }
         
         // 初始化筛选器
