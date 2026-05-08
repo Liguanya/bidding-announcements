@@ -1,4 +1,19 @@
-<!DOCTYPE html>
+import json
+
+# 读取数据
+with open('data/announcements.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+# 生成筛选选项
+keywords_set = set()
+sources_set = set()
+for ann in data['announcements']:
+    keywords_set.update(ann.get('keywords', []))
+    sources_set.add(ann.get('source', ''))
+sources_list = sorted(sources_set)
+
+# HTML模板
+html_content = '''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -40,8 +55,8 @@
     <div class="header">
         <h1>📢 京津冀招标公告追踪平台</h1>
         <div class="stats">
-            <span class="stats-item">📊 总计: 12 条</span>
-            <span class="stats-item">🕐 最后更新: 2026-05-08 08:47</span>
+            <span class="stats-item">📊 总计: ''' + str(data['totalCount']) + ''' 条</span>
+            <span class="stats-item">🕐 最后更新: ''' + data['lastUpdate'] + '''</span>
         </div>
     </div>
     
@@ -54,7 +69,7 @@
             <label>来源:</label>
             <select id="sourceFilter">
                 <option value="">全部</option>
-                <option value="天津市政府采购中心">天津市政府采购中心</option><option value="河北省政府采购网-张家口">河北省政府采购网-张家口</option>
+                ''' + ''.join([f'<option value="{s}">{s}</option>' for s in sources_list]) + '''
             </select>
         </div>
         <div class="filter-group">
@@ -98,7 +113,7 @@
     </div>
 
     <script>
-        const announcementsData = [{"title": "石家庄市行政审批局工程建设项目评审评估服务投资咨询评估服务框架协议采购征集公告", "pubDate": "2026-05-07", "source": "河北省政府采购网-张家口", "link": "http://www.ccgp-hebei.gov.cn/../../province/kjxy/zjgg/202605/t20260506_2360552.html", "keywords": ["评审"], "id": 12, "collectedAt": "2026-05-07", "description": "地区：河北省政府采购网-张家口；石家庄市行政审批局工程建设项目评审评估服务投资咨询评估服务框架协议采购征集公告"}, {"title": "石家庄市行政审批局工程建设项目评审评估服务环境影响技术评估服务框架协议采购征...", "pubDate": "2026-05-07", "source": "河北省政府采购网-张家口", "link": "http://www.ccgp-hebei.gov.cn/../../province/kjxy/zjgg/202605/t20260506_2360556.html", "keywords": ["评审"], "id": 11, "collectedAt": "2026-05-07", "description": "地区：河北省政府采购网-张家口；石家庄市行政审批局工程建设项目评审评估服务环境影响技术评估服务框架协议采购征..."}, {"title": "关于开展2025年度政府采购评审专家培训补考的通知", "pubDate": "2026-05-07", "source": "河北省政府采购网-张家口", "link": "http://www.ccgp-hebei.gov.cn/../../province/zytz/202511/t20251111_2285824.html", "keywords": ["评审"], "id": 10, "collectedAt": "2026-05-07", "description": "地区：河北省政府采购网-张家口；关于开展2025年度政府采购评审专家培训补考的通知"}, {"title": "河北省财政厅关于印发《河北省政府采购“双盲”评审文件示范文本（2.0版）》的通知", "pubDate": "2026-05-07", "source": "河北省政府采购网-张家口", "link": "http://www.ccgp-hebei.gov.cn/../../province/zytz/202601/t20260129_2322298.html", "keywords": ["评审"], "id": 9, "collectedAt": "2026-05-07", "description": "地区：河北省政府采购网-张家口；河北省财政厅关于印发《河北省政府采购“双盲”评审文件示范文本（2.0版）》的通知"}, {"title": "河北省政府采购“双盲”评审项目招标文件示范文本(2.0版)", "pubDate": "2026-05-07", "source": "河北省政府采购网-张家口", "link": "http://www.ccgp-hebei.gov.cn/../../province/PicNews/202602/t20260204_2325217.html", "keywords": ["评审"], "id": 8, "collectedAt": "2026-05-07", "description": "地区：河北省政府采购网-张家口；河北省政府采购“双盲”评审项目招标文件示范文本(2.0版)"}, {"title": "天津市公共资源交易中心（天津市政府采购中心） 天津市公共资源交易中心综合评标评审专家库远程异地评标改造对接项目 (项目编号:TGPC-2026-D-0195)成交公告", "pubDate": "2026-05-07", "source": "天津市政府采购中心", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=954187541", "keywords": ["评审"], "id": 7, "collectedAt": "2026-05-07", "description": "地区：天津市政府采购中心；天津市公共资源交易中心（天津市政府采购中心） 天津市公共资源交易中心综合评标评审专家库远程异地评标改造对接项目 (项目编号:TGPC-2026-D-0195)成交公告"}, {"title": "天津市生态环境局2026年天津市建设用地报告评审、监督检查、重点地块监测数据分析项目(项目编号：TGPC-2026-D-0301) 公开招标公告", "pubDate": "2026-05-07", "source": "天津市政府采购中心", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=977451118", "keywords": ["评审"], "id": 6, "collectedAt": "2026-05-07", "description": "地区：天津市政府采购中心；天津市生态环境局2026年天津市建设用地报告评审、监督检查、重点地块监测数据分析项目(项目编号：TGPC-2026-D-0301) 公开招标公告"}, {"title": "天津市应急管理局2026年全过程绩效评价管理及项目评审服务项目（项目编号：TGPC-2026-D-0362）公开招标公告", "pubDate": "2026-05-07", "source": "天津市政府采购中心", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=984779778", "keywords": ["评审", "绩效评价"], "id": 5, "collectedAt": "2026-05-07", "description": "地区：天津市政府采购中心；天津市应急管理局2026年全过程绩效评价管理及项目评审服务项目（项目编号：TGPC-2026-D-0362）公开招标公告"}, {"title": "天津市审计局协审（造价师）服务项目（项目编号：TGPC-2026-D-0261）竞争性磋商公告", "pubDate": "2026-05-07", "source": "天津市政府采购中心", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=961212394", "keywords": ["造价", "协审"], "id": 4, "collectedAt": "2026-05-07", "description": "地区：天津市政府采购中心；天津市审计局协审（造价师）服务项目（项目编号：TGPC-2026-D-0261）竞争性磋商公告"}, {"title": "天津市审计局协审（造价师）服务项目 (项目编号:TGPC-2026-D-0261)成交公告", "pubDate": "2026-05-07", "source": "天津市政府采购中心", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=974450586", "keywords": ["造价", "协审"], "id": 3, "collectedAt": "2026-05-07", "description": "地区：天津市政府采购中心；天津市审计局协审（造价师）服务项目 (项目编号:TGPC-2026-D-0261)成交公告"}, {"title": "天津市应急管理局2026年全过程绩效评价管理及项目评审服务项目（项目编号：TGPC-2026-D-0301）竞争性磋商公告", "pubDate": "2026-04-30", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=982456789", "source": "天津市政府采购中心", "budget": "", "projectCode": "", "unit": "", "id": 2, "collectedAt": "2026-05-07", "keywords": ["造价", "全过程"]}, {"title": "天津市社会无主危险废物（含有害垃圾）处置及危险废物全过程环境管理能力提升项目（项目编号：TGPC-2026-D-0389）公开招标公告", "pubDate": "2026-05-07", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=984509876", "source": "天津市政府采购中心", "budget": "", "projectCode": "", "unit": "", "id": 1, "collectedAt": "2026-05-07", "keywords": ["造价", "全过程"]}];
+        const announcementsData = ''' + json.dumps(data['announcements'], ensure_ascii=False) + ''';
         
         let filteredData = [...announcementsData];
         let currentPage = 1;
@@ -180,12 +195,12 @@
                 (ann.keywords || []).join(';'), ann.budget || '', ann.description || '', ann.link
             ]);
             
-            let csv = headers.join(',') + '\n';
+            let csv = headers.join(',') + '\\n';
             rows.forEach(row => {
-                csv += row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
+                csv += row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\\n';
             });
             
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob(['\\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `招标公告_${new Date().toISOString().slice(0,10)}.csv`;
@@ -204,4 +219,10 @@
         renderTable();
     </script>
 </body>
-</html>
+</html>'''
+
+# 保存HTML
+with open('index.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print(f"HTML已生成，包含 {data['totalCount']} 条数据")

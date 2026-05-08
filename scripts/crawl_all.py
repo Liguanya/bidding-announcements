@@ -28,7 +28,8 @@ JJJ_KEYWORDS = ['北京', '天津', '河北', '石家庄', '唐山', '保定', '
 # 行业关键词
 INDUSTRY_KEYWORDS = ['造价', '造价咨询', '全过程咨询', '全过程造价', '全过程工程', 
                      '招标代理', '项目管理', '工程监理', '结算审计', '预算编制',
-                     '协审', '评审', '绩效评价', '投资评审', '跟踪审计', '工程咨询']
+                     '协审', '评审', '绩效评价', '投资评审', '跟踪审计', '工程咨询',
+                     '造价师', '跟踪审计', '工程咨询', '协审服务', '审计服务', '造价服务']
 
 # 2026年法定节假日
 HOLIDAYS_2026 = [
@@ -117,7 +118,7 @@ def crawl_tianjin_gpc():
     print("\n[1/2] 天津市政府采购中心...")
     announcements = []
     
-    keywords = ['造价', '全过程', '协审', '评审']
+    keywords = ['造价', '全过程', '协审', '评审', '造价师', '绩效评价', '跟踪审计', '工程咨询', '造价咨询', '审计服务']
     
     for kw in keywords:
         url = f"http://tjgpc.zwfwb.tj.gov.cn/webInfo/getSearchWebInfoList1.do?keyWord={kw}&page=1"
@@ -217,6 +218,9 @@ def main():
     hebei_anns = crawl_hebei()
     all_announcements.extend(hebei_anns)
     
+    tjggzy_anns = crawl_tjggzy()
+    all_announcements.extend(tjggzy_anns)
+    
     # 去重
     seen = set()
     unique_anns = []
@@ -238,6 +242,45 @@ def main():
     update_data_files(valid_anns)
     
     return valid_anns
+
+
+
+def crawl_tjggzy():
+    """抓取天津公共资源交易网 (tjggzy.cn)"""
+    print("\n[3/3] 天津公共资源交易网...")
+    announcements = []
+    
+    # 注意: tjggzy.cn 使用JavaScript动态加载，API返回404
+    # 目前只能从主页提取部分数据
+    try:
+        url = "https://tjggzy.cn/"
+        resp = requests.get(url, headers=HEADERS, timeout=30, verify=False)
+        text = resp.text
+        
+        # 解码Unicode
+        text = text.replace('\\u002F', '/').replace('\\"', '"').replace('\\n', '\n').replace('\\/', '/')
+        
+        # 提取公告数据
+        import re
+        ann_pattern = r'announcementId:\s*"([^"]+)".*?announcementName:\s*"([^"]+)".*?publishTime:\s*"([^"]+)"'
+        matches = re.findall(ann_pattern, text, re.DOTALL)
+        
+        for match in matches:
+            ann_id, ann_name, pub_time = match
+            if len(ann_name) > 15 and is_industry_related(ann_name):
+                announcements.append({
+                    'title': ann_name,
+                    'pubDate': pub_time[:10] if pub_time else '',
+                    'source': '天津公共资源交易网',
+                    'link': f'https://tjggzy.cn/announcementIndex?id={ann_id}',
+                    'keywords': [kw for kw in INDUSTRY_KEYWORDS if kw in ann_name],
+                })
+        
+        print(f"  获取到 {len(announcements)} 条公告")
+    except Exception as e:
+        print(f"  抓取失败: {e}")
+    
+    return announcements
 
 def update_data_files(announcements):
     """更新数据文件"""
