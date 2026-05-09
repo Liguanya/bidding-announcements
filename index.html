@@ -319,6 +319,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             initStats();
             initFilters();
+            filteredData = [...EMBEDDED_DATA.announcements];
             initSearch();
             renderList();
         });
