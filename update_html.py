@@ -1,28 +1,33 @@
+#!/usr/bin/env python3
+"""
+更新index.html中的内嵌数据
+"""
 import json
 import re
 
 # 读取JSON数据
-with open('/app/data/所有对话/主对话/bidding-announcements/data/announcements.json', 'r', encoding='utf-8') as f:
+data_path = '/app/data/所有对话/主对话/bidding-announcements/data/announcements.json'
+with open(data_path, 'r', encoding='utf-8') as f:
     data = json.load(f)
 
-# 读取HTML文件
-with open('/app/data/所有对话/主对话/bidding-announcements/index.html', 'r', encoding='utf-8') as f:
-    html = f.read()
+# 将数据转换为JSON字符串
+json_str = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
 
-# 将数据转换为JavaScript数组格式
-announcements_json = json.dumps(data["announcements"], ensure_ascii=False)
+# 读取index.html
+html_path = '/app/data/所有对话/主对话/bidding-announcements/index.html'
+with open(html_path, 'r', encoding='utf-8') as f:
+    html_content = f.read()
 
-# 更新HTML中的数据
-html = re.sub(r'const ANNOUNCEMENTS = \[.*?\];', f'const ANNOUNCEMENTS = {announcements_json};', html, flags=re.DOTALL)
+# 替换内嵌数据
+pattern = r'const EMBEDDED_DATA = \{.*?\};'
+replacement = f'const EMBEDDED_DATA = {json_str};'
 
-# 更新统计数据
-html = re.sub(r'共找到 <strong>(\d+)</strong> 条相关招标公告', f'共找到 <strong>{data["totalCount"]}</strong> 条相关招标公告', html)
-html = re.sub(r'最后更新：(\d{4}-\d{2}-\d{2} \d{2}:\d{2})', f'最后更新：{data["lastUpdate"]}', html)
+new_html = re.sub(pattern, replacement, html_content, flags=re.DOTALL)
 
-# 写入更新后的HTML
-with open('/app/data/所有对话/主对话/bidding-announcements/index.html', 'w', encoding='utf-8') as f:
-    f.write(html)
+# 写入新的index.html
+with open(html_path, 'w', encoding='utf-8') as f:
+    f.write(new_html)
 
-print("HTML文件已更新")
-print(f"总公告数: {data['totalCount']}")
-print(f"最后更新: {data['lastUpdate']}")
+print("index.html内嵌数据已更新!")
+print(f"数据更新时间: {data['lastUpdate']}")
+print(f"公告总数: {data['totalCount']}")
