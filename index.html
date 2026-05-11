@@ -35,6 +35,7 @@
             text-align: center; 
         }
         .stat-card.green { background: linear-gradient(135deg, #43a047, #2e7d32); }
+        .stat-card.blue { background: linear-gradient(135deg, #1e88e5, #1565c0); }
         .stat-card.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
         .stat-card.red { background: linear-gradient(135deg, #e53935, #c62828); }
         .stat-label { font-size: 14px; margin-bottom: 8px; opacity: 0.9; }
@@ -223,6 +224,10 @@
                     <div class="stat-label">今日新增</div>
                     <div class="stat-value" id="todayCount">-</div>
                 </div>
+                <div class="stat-card blue">
+                    <div class="stat-label">北京地区</div>
+                    <div class="stat-value" id="bjCount">-</div>
+                </div>
                 <div class="stat-card orange">
                     <div class="stat-label">天津地区</div>
                     <div class="stat-value" id="tjCount">-</div>
@@ -335,18 +340,29 @@
             const todayCount = announcements.filter(a => a.pubDate === today || a.collectedAt === today).length;
             document.getElementById('todayCount').textContent = todayCount;
             
+            // 北京地区
+            const bjCount = announcements.filter(a => 
+                (a.description && a.description.includes('北京')) || 
+                (a.source && a.source.includes('北京')) ||
+                (a.title && a.title.includes('北京')) ||
+                (a.region && a.region.includes('北京'))
+            ).length;
+            document.getElementById('bjCount').textContent = bjCount;
+            
             // 天津地区
             const tjCount = announcements.filter(a => 
                 (a.description && a.description.includes('天津')) || 
                 (a.source && a.source.includes('天津')) ||
-                (a.title && a.title.includes('天津'))
+                (a.title && a.title.includes('天津')) ||
+                (a.region && a.region.includes('天津'))
             ).length;
             document.getElementById('tjCount').textContent = tjCount;
             
             // 河北地区
             const hbCount = announcements.filter(a => 
-                (a.description && (a.description.includes('河北') || a.description.includes('石家庄') || a.description.includes('保定') || a.description.includes('秦皇岛'))) ||
-                (a.source && a.source.includes('河北'))
+                (a.description && (a.description.includes('河北') || a.description.includes('石家庄') || a.description.includes('保定') || a.description.includes('秦皇岛') || a.description.includes('邢台') || a.description.includes('邯郸') || a.description.includes('唐山') || a.description.includes('廊坊') || a.description.includes('雄安'))) ||
+                (a.source && a.source.includes('河北')) ||
+                (a.region && a.region.includes('河北'))
             ).length;
             document.getElementById('hbCount').textContent = hbCount;
         }
