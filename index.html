@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📢 招标公告追踪平台</title>
+    <title>📢 京津冀招标公告追踪平台</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -213,7 +213,7 @@
     <div class="container">
         <!-- 头部 -->
         <div class="header">
-            <h1>📢 招标公告追踪平台</h1>
+            <h1>📢 京津冀招标公告追踪平台</h1>
             <p class="header-subtitle">实时推送政府采购招标公告，助您把握商机 | 最后更新: 2026-05-09 18:21</p>
             <div class="stats">
                 <div class="stat-card">
@@ -264,9 +264,9 @@
                     <select id="filterSource">
                         <option value="">全部来源</option>
                         <option value="中国政府采购网">中国政府采购网</option>
-                        <option value="天津">天津</option>
-                        <option value="河北">河北</option>
-                        <option value="北京">北京</option>
+                        <option value="天津市政府采购网">天津市政府采购网</option>
+                        <option value="天津市公共资源交易平台">天津市公共资源交易平台</option>
+                        <option value="中国招标投标公共服务平台">中国招标投标公共服务平台</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -325,6 +325,7 @@
             initStats();
             initFilters();
             initSearch();
+            filterData();
             renderList();
         });
         
