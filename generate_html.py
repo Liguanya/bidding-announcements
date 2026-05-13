@@ -288,6 +288,10 @@ html_content = '''<!DOCTYPE html>
                         <option value="招标代理">招标代理</option>
                         <option value="项目管理">项目管理</option>
                         <option value="监理">监理</option>
+                        <option value="可行性研究">可行性研究</option>
+                        <option value="项目建议">项目建议</option>
+                        <option value="实施方案">实施方案</option>
+                        <option value="设计">设计</option>
                     </select>
                 </div>
                 <div class="filter-group">

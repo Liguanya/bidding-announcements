@@ -258,6 +258,10 @@
                         <option value="招标代理">招标代理</option>
                         <option value="项目管理">项目管理</option>
                         <option value="监理">监理</option>
+                        <option value="可行性研究">可行性研究</option>
+                        <option value="项目建议">项目建议</option>
+                        <option value="实施方案">实施方案</option>
+                        <option value="设计">设计</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -497,8 +501,13 @@
                 // 日期筛选
                 if (date && item.pubDate !== date) return false;
                 
-                // 关键词筛选
-                if (keyword && !item.keywords.some(k => k.includes(keyword) || keyword.includes(k))) return false;
+                // 关键词筛选：同时检查keywords数组、标题和描述
+                if (keyword) {
+                    const keywordMatch = item.keywords && item.keywords.some(k => k.includes(keyword) || keyword.includes(k));
+                    const titleMatch = item.title && item.title.includes(keyword);
+                    const descMatch = item.description && item.description.includes(keyword);
+                    if (!keywordMatch && !titleMatch && !descMatch) return false;
+                }
                 
                 // 来源筛选
                 if (source && item.source !== source) return false;  // 使用严格相等（数据已规范化）
