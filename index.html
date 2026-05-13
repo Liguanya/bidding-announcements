@@ -380,11 +380,12 @@
         }
         
         // 全局变量
-        let filteredData = [];
+        let filteredData = EMBEDDED_DATA.announcements;
         let currentPage = 1;
         const pageSize = 20;
         
         // 初始化
+        console.log("页面初始化开始，数据总数:", EMBEDDED_DATA.announcements.length);
         document.addEventListener('DOMContentLoaded', function() {
             initStats();
             initFilters();
@@ -497,6 +498,11 @@
         
         // 渲染列表
         function renderList() {
+            // 确保filteredData有数据
+            if (filteredData.length === 0 && EMBEDDED_DATA.announcements.length > 0) {
+                filteredData = EMBEDDED_DATA.announcements;
+                console.log("自动恢复数据:", filteredData.length);
+            }
             const listContainer = document.getElementById('announcementList');
             const start = (currentPage - 1) * pageSize;
             const end = start + pageSize;
