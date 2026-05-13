@@ -294,10 +294,6 @@ html_content = '''<!DOCTYPE html>
                     <label>来源</label>
                     <select id="filterSource">
                         <option value="">全部来源</option>
-                        <option value="中国政府采购网">中国政府采购网</option>
-                        <option value="天津">天津</option>
-                        <option value="河北">河北</option>
-                        <option value="北京">北京</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -345,6 +341,14 @@ html_content = '''<!DOCTYPE html>
     <script>
         // 嵌入式数据
         const EMBEDDED_DATA = ''' + json.dumps(data, ensure_ascii=False) + ''';
+        
+        // 来源白名单 - 只有这4个来源是合法的
+        const ALLOWED_SOURCES = [
+            '天津市公共资源交易平台',
+            '中国招标投标公共服务平台',
+            '中国政府采购网',
+            '天津市政府采购网'
+        ];
         
         // 地区关键词白名单
         const BEIJING_KEYWORDS = ['北京', '北京市', '北京地区', '京', '北京林业大学', '北京工业大学', 
@@ -465,6 +469,15 @@ html_content = '''<!DOCTYPE html>
                 option.value = date;
                 option.textContent = date;
                 dateSelect.appendChild(option);
+            });
+            
+            // 来源筛选 - 从白名单动态生成（关键修复：不再从数据中提取，确保不会出现地区选项）
+            const sourceSelect = document.getElementById('filterSource');
+            ALLOWED_SOURCES.forEach(source => {
+                const option = document.createElement('option');
+                option.value = source;
+                option.textContent = source;
+                sourceSelect.appendChild(option);
             });
             
             // 添加事件监听
