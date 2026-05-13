@@ -420,10 +420,21 @@ html_content = '''<!DOCTYPE html>
         
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
+            // 确保filteredData初始化
+            filteredData = [...EMBEDDED_DATA.announcements];
             initStats();
             initFilters();
             initSearch();
             renderList();
+            
+            // 终极兜底：延迟100ms再次检查确保数据正常显示
+            setTimeout(function() {
+                if (filteredData.length === 0) {
+                    console.warn("延迟兜底：filteredData仍为空，重新初始化");
+                    filteredData = [...EMBEDDED_DATA.announcements];
+                    renderList();
+                }
+            }, 100);
         });
         
         // 初始化统计数据
@@ -541,6 +552,11 @@ html_content = '''<!DOCTYPE html>
         // 渲染列表
         function renderList() {
             const listContainer = document.getElementById('announcementList');
+            // 终极兜底：如果filteredData为空，自动从EMBEDDED_DATA恢复
+            if (filteredData.length === 0 && typeof EMBEDDED_DATA !== "undefined" && EMBEDDED_DATA.announcements) {
+                console.warn("filteredData为空，自动从EMBEDDED_DATA恢复");
+                filteredData = [...EMBEDDED_DATA.announcements];
+            }
             const start = (currentPage - 1) * pageSize;
             const end = start + pageSize;
             const pageData = filteredData.slice(start, end);
