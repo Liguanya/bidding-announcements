@@ -1,9 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""生成完整的招标公告HTML页面"""
+"""生成完整的招标公告HTML页面 - 彻底修复地区统计问题"""
 
 import json
 from datetime import datetime
+
+# 地区关键词白名单 - 全面覆盖
+BEIJING_KEYWORDS = ['北京', '北京市', '北京地区', '京', '北京林业大学', '北京工业大学', 
+                   '北京理工大学', '北京航空航天大学', '北京师范大学', '北京科技大学', 
+                   '北京交通大学', '北京化工大学', '北京邮电大学', '北京中医药大学', 
+                   '北京外国语大学', '北京协和医学院', '北京体育大学', '中央民族大学', 
+                   '中国政法大学', '中国人民大学', '清华大学', '北京大学', '中科院', 
+                   '中国科学院', '退休职工活动站']
+TIANJIN_KEYWORDS = ['天津', '天津市', '天津地区', '津', '团泊', '泰达', '滨海', '天津港',
+                   '天津大学', '南开大学', '天津医科大学', '天津师范大学', '天津工业大学']
+HEBEI_KEYWORDS = ['河北', '河北省', '石家庄', '唐山', '保定', '廊坊', '秦皇岛', '邯郸', 
+                 '邢台', '张家口', '承德', '沧州', '衡水', '雄安', '雄安新区', '正定', 
+                 '辛集', '藁城', '晋州', '新乐', '鹿泉', '遵化', '迁安', '霸州', '三河', 
+                 '涿州', '定州', '安国', '高碑店', '泊头', '任丘', '黄骅', '河间', 
+                 '冀州', '深州', '南宫', '沙河', '武安', '南宫市', '河北大学', '燕山大学']
 
 # 读取数据
 with open('data/announcements.json', 'r', encoding='utf-8') as f:
@@ -40,8 +55,8 @@ html_content = '''<!DOCTYPE html>
         .header h1 { color: #333; font-size: 28px; margin-bottom: 8px; }
         .header-subtitle { color: #666; font-size: 14px; margin-bottom: 16px; }
         
-        /* 统计卡片 */
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
+        /* 统计卡片 - 修改为5个卡片 */
+        .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 20px; }
         .stat-card { 
             background: linear-gradient(135deg, #667eea, #764ba2); 
             color: white; 
@@ -52,6 +67,8 @@ html_content = '''<!DOCTYPE html>
         .stat-card.green { background: linear-gradient(135deg, #43a047, #2e7d32); }
         .stat-card.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
         .stat-card.red { background: linear-gradient(135deg, #e53935, #c62828); }
+        .stat-card.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
+        .stat-card.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
         .stat-label { font-size: 14px; margin-bottom: 8px; opacity: 0.9; }
         .stat-value { font-size: 2rem; font-weight: bold; }
         
@@ -238,6 +255,10 @@ html_content = '''<!DOCTYPE html>
                     <div class="stat-label">今日新增</div>
                     <div class="stat-value" id="todayCount">-</div>
                 </div>
+                <div class="stat-card blue">
+                    <div class="stat-label">北京地区</div>
+                    <div class="stat-value" id="bjCount">-</div>
+                </div>
                 <div class="stat-card orange">
                     <div class="stat-label">天津地区</div>
                     <div class="stat-value" id="tjCount">-</div>
@@ -283,9 +304,9 @@ html_content = '''<!DOCTYPE html>
                     <label>地区</label>
                     <select id="filterRegion">
                         <option value="">全部地区</option>
+                        <option value="北京">北京</option>
                         <option value="天津">天津</option>
                         <option value="河北">河北</option>
-                        <option value="北京">北京</option>
                     </select>
                 </div>
                 <div class="search-box">
@@ -325,6 +346,69 @@ html_content = '''<!DOCTYPE html>
         // 嵌入式数据
         const EMBEDDED_DATA = ''' + json.dumps(data, ensure_ascii=False) + ''';
         
+        // 地区关键词白名单
+        const BEIJING_KEYWORDS = ['北京', '北京市', '北京地区', '京', '北京林业大学', '北京工业大学', 
+                                  '北京理工大学', '北京航空航天大学', '北京师范大学', '北京科技大学', 
+                                  '北京交通大学', '北京化工大学', '北京邮电大学', '北京中医药大学', 
+                                  '北京外国语大学', '北京协和医学院', '北京体育大学', '中央民族大学', 
+                                  '中国政法大学', '中国人民大学', '清华大学', '北京大学', '中科院', 
+                                  '中国科学院', '退休职工活动站'];
+        const TIANJIN_KEYWORDS = ['天津', '天津市', '天津地区', '津', '团泊', '泰达', '滨海', '天津港',
+                                  '天津大学', '南开大学', '天津医科大学', '天津师范大学', '天津工业大学'];
+        const HEBEI_KEYWORDS = ['河北', '河北省', '石家庄', '唐山', '保定', '廊坊', '秦皇岛', '邯郸', 
+                                '邢台', '张家口', '承德', '沧州', '衡水', '雄安', '雄安新区', '正定', 
+                                '辛集', '藁城', '晋州', '新乐', '鹿泉', '遵化', '迁安', '霸州', '三河', 
+                                '涿州', '定州', '安国', '高碑店', '泊头', '任丘', '黄骅', '河间', 
+                                '冀州', '深州', '南宫', '沙河', '武安', '南宫市', '河北大学', '燕山大学'];
+        
+        // 标准化地区提取函数
+        function extractRegion(announcement) {
+            const title = announcement.title || '';
+            const desc = announcement.description || '';
+            const source = announcement.source || '';
+            const regionField = announcement.region || '';
+            
+            // 优先级1: region字段（已标准化）
+            if (regionField && ['北京', '天津', '河北', '其他'].includes(regionField)) {
+                return regionField;
+            }
+            
+            // 优先级2: 标题中的关键词
+            for (const kw of BEIJING_KEYWORDS) {
+                if (title.includes(kw)) return '北京';
+            }
+            for (const kw of TIANJIN_KEYWORDS) {
+                if (title.includes(kw)) return '天津';
+            }
+            for (const kw of HEBEI_KEYWORDS) {
+                if (title.includes(kw)) return '河北';
+            }
+            
+            // 优先级3: 描述中的关键词
+            for (const kw of BEIJING_KEYWORDS) {
+                if (desc.includes(kw)) return '北京';
+            }
+            for (const kw of TIANJIN_KEYWORDS) {
+                if (desc.includes(kw)) return '天津';
+            }
+            for (const kw of HEBEI_KEYWORDS) {
+                if (desc.includes(kw)) return '河北';
+            }
+            
+            // 优先级4: 来源中的关键词
+            for (const kw of BEIJING_KEYWORDS) {
+                if (source.includes(kw)) return '北京';
+            }
+            for (const kw of TIANJIN_KEYWORDS) {
+                if (source.includes(kw)) return '天津';
+            }
+            for (const kw of HEBEI_KEYWORDS) {
+                if (source.includes(kw)) return '河北';
+            }
+            
+            return '其他';
+        }
+        
         // 全局变量
         let filteredData = [];
         let currentPage = 1;
@@ -350,20 +434,25 @@ html_content = '''<!DOCTYPE html>
             const todayCount = announcements.filter(a => a.pubDate === today || a.collectedAt === today).length;
             document.getElementById('todayCount').textContent = todayCount;
             
-            // 天津地区
-            const tjCount = announcements.filter(a => 
-                (a.description && a.description.includes('天津')) || 
-                (a.source && a.source.includes('天津')) ||
-                (a.title && a.title.includes('天津'))
-            ).length;
+            // 北京地区 - 新增
+            const bjCount = announcements.filter(a => extractRegion(a) === '北京').length;
+            document.getElementById('bjCount').textContent = bjCount;
+            
+            // 天津地区 - 使用标准化函数
+            const tjCount = announcements.filter(a => extractRegion(a) === '天津').length;
             document.getElementById('tjCount').textContent = tjCount;
             
-            // 河北地区
-            const hbCount = announcements.filter(a => 
-                (a.description && (a.description.includes('河北') || a.description.includes('石家庄') || a.description.includes('保定') || a.description.includes('秦皇岛'))) ||
-                (a.source && a.source.includes('河北'))
-            ).length;
+            // 河北地区 - 使用标准化函数
+            const hbCount = announcements.filter(a => extractRegion(a) === '河北').length;
             document.getElementById('hbCount').textContent = hbCount;
+            
+            // 调试信息输出到控制台
+            console.log('=== 地区统计调试信息 ===');
+            console.log('北京地区数量:', bjCount);
+            console.log('天津地区数量:', tjCount);
+            console.log('河北地区数量:', hbCount);
+            console.log('总计:', bjCount + tjCount + hbCount);
+            console.log('========================');
         }
         
         // 初始化筛选器
@@ -420,10 +509,10 @@ html_content = '''<!DOCTYPE html>
                 // 来源筛选
                 if (source && !item.source.includes(source)) return false;
                 
-                // 地区筛选
+                // 地区筛选 - 使用标准化函数
                 if (region) {
-                    const desc = (item.description || '') + (item.title || '');
-                    if (!desc.includes(region)) return false;
+                    const itemRegion = extractRegion(item);
+                    if (itemRegion !== region) return false;
                 }
                 
                 // 搜索筛选
@@ -455,8 +544,8 @@ html_content = '''<!DOCTYPE html>
             listContainer.innerHTML = pageData.map((item, index) => {
                 const keywordsHtml = item.keywords ? item.keywords.map(k => '<span class="meta-tag keyword">' + k + '</span>').join('') : '';
                 const sourceHtml = item.source ? '<span class="meta-tag source">' + item.source + '</span>' : '';
-                const regionMatch = item.description ? item.description.match(/地区：([^；]+)/) : null;
-                const regionHtml = regionMatch ? '<span class="meta-tag region">' + regionMatch[1] + '</span>' : '';
+                const regionVal = extractRegion(item);
+                const regionHtml = '<span class="meta-tag region">' + regionVal + '</span>';
                 
                 return '<div class="announcement-item" onclick="showDetail(' + (start + index) + ')">' +
                     '<div class="item-header">' +
@@ -538,6 +627,10 @@ html_content = '''<!DOCTYPE html>
                 body += '<div class="detail-section"><h4>来源</h4><div class="detail-content">' + item.source + '</div></div>';
             }
             
+            // 显示标准化地区
+            const regionVal = extractRegion(item);
+            body += '<div class="detail-section"><h4>地区</h4><div class="detail-content">' + regionVal + '</div></div>';
+            
             if (item.keywords && item.keywords.length > 0) {
                 body += '<div class="detail-section"><h4>关键词</h4><div class="detail-content">' + item.keywords.join('、') + '</div></div>';
             }
@@ -587,6 +680,7 @@ html_content = '''<!DOCTYPE html>
                 '序号': index + 1,
                 '发布日期': item.pubDate || '',
                 '标题': item.title || '',
+                '地区': extractRegion(item),
                 '来源': item.source || '',
                 '关键词': item.keywords ? item.keywords.join(', ') : '',
                 '详情': item.description || '',
@@ -628,4 +722,4 @@ html_content = '''<!DOCTYPE html>
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print(f"✅ HTML文件已生成，共 {len(announcements)} 条公告")
+print("HTML文件已生成: index.html")

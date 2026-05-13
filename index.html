@@ -25,8 +25,8 @@
         .header h1 { color: #333; font-size: 28px; margin-bottom: 8px; }
         .header-subtitle { color: #666; font-size: 14px; margin-bottom: 16px; }
         
-        /* 统计卡片 */
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
+        /* 统计卡片 - 修改为5个卡片 */
+        .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 20px; }
         .stat-card { 
             background: linear-gradient(135deg, #667eea, #764ba2); 
             color: white; 
@@ -37,6 +37,8 @@
         .stat-card.green { background: linear-gradient(135deg, #43a047, #2e7d32); }
         .stat-card.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
         .stat-card.red { background: linear-gradient(135deg, #e53935, #c62828); }
+        .stat-card.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
+        .stat-card.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
         .stat-label { font-size: 14px; margin-bottom: 8px; opacity: 0.9; }
         .stat-value { font-size: 2rem; font-weight: bold; }
         
@@ -213,7 +215,7 @@
         <!-- 头部 -->
         <div class="header">
             <h1>📢 京津冀招标公告追踪平台</h1>
-            <p class="header-subtitle">实时推送政府采购招标公告，助您把握商机 | 最后更新: <span id="lastUpdate"></span></p>
+            <p class="header-subtitle">实时推送政府采购招标公告，助您把握商机 | 最后更新: 2026-05-13 08:47</p>
             <div class="stats">
                 <div class="stat-card">
                     <div class="stat-label">总公告数</div>
@@ -222,6 +224,10 @@
                 <div class="stat-card green">
                     <div class="stat-label">今日新增</div>
                     <div class="stat-value" id="todayCount">-</div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="stat-label">北京地区</div>
+                    <div class="stat-value" id="bjCount">-</div>
                 </div>
                 <div class="stat-card orange">
                     <div class="stat-label">天津地区</div>
@@ -258,15 +264,19 @@
                     <label>来源</label>
                     <select id="filterSource">
                         <option value="">全部来源</option>
+                        <option value="中国政府采购网">中国政府采购网</option>
+                        <option value="天津">天津</option>
+                        <option value="河北">河北</option>
+                        <option value="北京">北京</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label>地区</label>
                     <select id="filterRegion">
                         <option value="">全部地区</option>
+                        <option value="北京">北京</option>
                         <option value="天津">天津</option>
                         <option value="河北">河北</option>
-                        <option value="北京">北京</option>
                     </select>
                 </div>
                 <div class="search-box">
@@ -303,132 +313,86 @@
     <div class="toast" id="toast"></div>
     
     <script>
-        // ============================================
-        // 系统配置 - 严格白名单机制
-        // ============================================
-        
-        // 来源白名单 - 只允许这4个来源
-        const ALLOWED_SOURCES = [
-            "天津市公共资源交易平台",
-            "中国招标投标公共服务平台",
-            "中国政府采购网",
-            "天津市政府采购网"
-        ];
-        
         // 嵌入式数据
-        const EMBEDDED_DATA = {"lastUpdate": "2026-05-13 08:47", "totalCount": 79, "announcements": [{"id": 318, "title": "北京林业大学雄安校区全过程造价咨询服务（四标段）", "pubDate": "2026-05-16", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/gkzb/202505/t20250516_24612768.htm", "keywords": ["全过程咨询", "造价咨询", "项目管理"], "collectedAt": "2026-05-06", "slot": "下午", "budget": "429.82万元", "description": "地区：北京；采购单位：北京林业大学；服务内容：工程量清单及招标控制价编制、合同价重计量、施工过程造价咨询、竣工结算审核；开标：2026-06-11", "region": ""}, {"title": "石家庄市行政审批局工程建设项目评审评估服务投资咨询评估服务框架协议采购征集公告", "pubDate": "2026-05-12", "source": "中国政府采购网", "link": "http://www.ccgp-hebei.gov.cn/../../province/kjxy/zjgg/202605/t20260506_2360552.html", "keywords": ["评审"], "id": 429, "collectedAt": "2026-05-12", "description": "地区：河北省政府采购网-张家口；石家庄市行政审批局工程建设项目评审评估服务投资咨询评估服务框架协议采购征集公告"}, {"title": "石家庄市行政审批局工程建设项目评审评估服务环境影响技术评估服务框架协议采购征...", "pubDate": "2026-05-12", "source": "中国政府采购网", "link": "http://www.ccgp-hebei.gov.cn/../../province/kjxy/zjgg/202605/t20260506_2360556.html", "keywords": ["评审"], "id": 428, "collectedAt": "2026-05-12", "description": "地区：河北省政府采购网-张家口；石家庄市行政审批局工程建设项目评审评估服务环境影响技术评估服务框架协议采购征..."}, {"title": "关于开展2025年度政府采购评审专家培训补考的通知", "pubDate": "2026-05-12", "source": "中国政府采购网", "link": "http://www.ccgp-hebei.gov.cn/../../province/zytz/202511/t20251111_2285824.html", "keywords": ["评审"], "id": 427, "collectedAt": "2026-05-12", "description": "地区：河北省政府采购网-张家口；关于开展2025年度政府采购评审专家培训补考的通知"}, {"title": "河北省财政厅关于印发《河北省政府采购“双盲”评审文件示范文本（2.0版）》的通知", "pubDate": "2026-05-12", "source": "中国政府采购网", "link": "http://www.ccgp-hebei.gov.cn/../../province/zytz/202601/t20260129_2322298.html", "keywords": ["评审"], "id": 426, "collectedAt": "2026-05-12", "description": "地区：河北省政府采购网-张家口；河北省财政厅关于印发《河北省政府采购“双盲”评审文件示范文本（2.0版）》的通知"}, {"title": "河北省政府采购“双盲”评审项目招标文件示范文本(2.0版)", "pubDate": "2026-05-12", "source": "中国政府采购网", "link": "http://www.ccgp-hebei.gov.cn/../../province/PicNews/202602/t20260204_2325217.html", "keywords": ["评审"], "id": 425, "collectedAt": "2026-05-12", "description": "地区：河北省政府采购网-张家口；河北省政府采购“双盲”评审项目招标文件示范文本(2.0版)"}, {"id": 445, "title": "团泊东（津静挂）2019-44号地项目造价咨询复审", "pubDate": "2026-05-11", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418382301.html", "keywords": ["造价咨询复审", "房地产项目", "竞争性磋商", "结算审核"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "天津河西区", "description": "地区：天津河西区；采购单位：天津玺城开局城市发展有限公司；项目编号：YLB-MFTJ-DL-#；服务内容：团泊东（津静挂）2019-44号地项目造价咨询复审；开标时间：2026年5月21日；项目负责人须具有土建专业一级注册造价工程师证书"}, {"id": 444, "title": "新媒体专业部给排水管线改造工程（造价咨询）", "pubDate": "2026-05-11", "source": "中国政府采购网", "link": "https://ggzyfw.beijing.gov.cn/jyxxcggg/20260511/5526007.html", "keywords": ["造价咨询", "给排水管线改造", "工程量清单编制", "最高投标限价编制"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "1.48094万元", "region": "北京海淀区", "description": "地区：北京海淀区；采购单位：北京新媒体职业学院；项目编号：1100002****200168944-XM002；服务内容：完成新媒体专业部给排水管线改造工程的造价咨询服务，包括工程量清单编制、最高投标限价编制及其他配合工作等；开标时间：2026年5月22日；专门面向中小企业采购"}, {"id": 438, "title": "团泊东（津静挂）2019-44号地项目造价咨询复审", "pubDate": "2026-05-11", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418382301.html", "keywords": ["造价咨询复审", "房地产项目", "竞争性磋商", "结算审核"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "天津河西区", "description": "地区：天津河西区；采购单位：天津玺城开局城市发展有限公司；项目编号：YLB-MFTJ-DL-#；服务内容：团泊东（津静挂）2019-44号地项目造价咨询复审；开标时间：2026年5月21日；项目负责人须具有土建专业一级注册造价工程师证书"}, {"id": 437, "title": "新媒体专业部给排水管线改造工程（造价咨询）", "pubDate": "2026-05-11", "source": "中国政府采购网", "link": "https://ggzyfw.beijing.gov.cn/jyxxcggg/20260511/5526007.html", "keywords": ["造价咨询", "给排水管线改造", "工程量清单编制", "最高投标限价编制"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "1.48094万元", "region": "北京海淀区", "description": "地区：北京海淀区；采购单位：北京新媒体职业学院；项目编号：1100002****200168944-XM002；服务内容：完成新媒体专业部给排水管线改造工程的造价咨询服务，包括工程量清单编制、最高投标限价编制及其他配合工作等；开标时间：2026年5月22日；专门面向中小企业采购"}, {"id": 432, "title": "2026年5-6月河北省造价咨询服务入库招标精准清单", "pubDate": "2026-05-11", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418241758.html", "keywords": ["造价咨询", "入库招标", "框架协议", "政府采购意向", "河北省"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "多项目总额预计超2000万元", "region": "河北省全域（承德、石家庄、廊坊、秦皇岛、沧州、保定等）", "description": "地区：河北省全域（承德、石家庄、廊坊、秦皇岛、沧州、保定等）；涵盖：兴城提标扩能建设项目全过程造价咨询、宽城新能源汽车充电基础设施造价咨询、高端计量技术创新基地全过程造价咨询、文安县职教中心分校新建工程第三方造价咨询、安新县燃气安全设施更新改造项目造价咨询等多个重大项目"}, {"id": 452, "title": "邱县2026年小麦病虫害防控药品采购项目（二次）", "pubDate": "2026-05-09", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202605/t20260509_26534330.htm", "keywords": ["造价咨询公司", "代理机构", "河北天诺", "政府采购"], "collectedAt": "2026-05-13", "slot": "早间", "budget": "134.642957万元", "region": "河北省邯郸市邱县", "description": "地区：河北省邯郸市邱县；采购单位：邱县农业农村局；项目编号：HBTNCG-20260414；代理机构：河北天诺工程造价咨询有限公司；采购内容：联苯·噻虫胺、吡唑醚菌酯、氨基酸水溶肥、芸苔素等；开标时间：2026年6月1日；采用双盲评审"}, {"id": 436, "title": "安新县燃气安全设施更新改造项目全过程造价咨询服务", "pubDate": "2026-05-09", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418241758.html", "keywords": ["全过程造价咨询", "燃气工程", "安全改造", "雄安新区", "安新县"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "未公开", "region": "河北保定雄安新区安新县", "description": "地区：河北保定雄安新区安新县；采购单位：安新县住房和城乡建设局；服务内容：燃气安全设施更新改造项目全过程造价咨询服务采购；拟采购时间：2026年5月"}, {"id": 419, "title": "2026年~2028年造价咨询服务采购公告", "pubDate": "2026-05-09", "source": "中国政府采购网", "link": "http://www.yfbzb.com/inviteBid/detail/20260509_595512991.html", "keywords": ["造价咨询", "全过程咨询", "成本测算", "结算审核", "数据中心"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "未公开", "region": "北京丰台区", "description": "地区：北京丰台区；采购单位：中国金茂下属公司；服务内容：项目工程造价有关所有事宜，包括方案成本测算、预结算编制与审核、工程量清单及标底编制、清标工作、变更签证审核、动态成本监控等；服务期限3年；项目负责人须有8年以上经验，具备注册造价工程师证书"}, {"id": 418, "title": "工程造价咨询企业库招标公告", "pubDate": "2026-05-09", "source": "中国政府采购网", "link": "https://m.bidizhaobiao.com/info-769927911.html", "keywords": ["造价咨询企业库", "预算编制", "预算审核", "跟踪审计", "结算审核"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "未公开（折扣率报价）", "region": "河北石家庄", "description": "地区：河北石家庄；项目编号：2026-JL0501-F1004；服务内容：引入多家造价咨询公司，承担预算编制、预算审核、进度款跟踪审计、结算初审等任务；服务期限2年，可续签最多2次；军队采购项目"}, {"id": 451, "title": "河北省公安厅交通管理局审计业务费采购（B包：造价咨询服务）", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202605/t20260508_26531757.htm", "keywords": ["造价咨询", "审计业务", "竞争性磋商", "河北省"], "collectedAt": "2026-05-13", "slot": "早间", "budget": "最高限价为《河北省工程造价咨询服务收费管理暂行办法》收费标准的80%", "region": "河北省石家庄市", "description": "地区：河北省石家庄市；采购单位：河北省公安厅交通管理局本级；项目编号：BWZB2026-04N36；服务内容：本项目分2个标包，B包为造价咨询服务，最高限价为《河北省工程造价咨询服务收费管理暂行办法》（冀建市研[2017]2号）文件收费标准的80%；开标时间：2026年5月21日；专门面向中小企业采购"}, {"id": 446, "title": "北京市退休职工活动站2026年度造价咨询单位选取", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "年度框架", "单位选取"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京；采购单位：北京市退休职工活动站；服务内容：2026年度造价咨询单位选取；发布时间：2026年5月8日"}, {"id": 439, "title": "北京市退休职工活动站2026年度造价咨询单位选取", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "年度框架", "单位选取"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京；采购单位：北京市退休职工活动站；服务内容：2026年度造价咨询单位选取；发布时间：2026年5月8日"}, {"id": 435, "title": "献县热源建设项目工程造价咨询采购意向", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418241758.html", "keywords": ["造价咨询", "热源建设", "市政工程", "献县"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "未公开", "region": "河北沧州献县", "description": "地区：河北沧州献县；采购单位：献县住房和城乡建设局；服务内容：热源建设项目工程造价咨询；拟采购时间：2026年5月"}, {"id": 430, "title": "河北民族师范学院2026-2027年造价咨询机构框架协议采购项目", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://www.hbun.edu.cn/zcglc/info/1056/6342.htm", "keywords": ["造价咨询", "框架协议", "高校建设", "承德"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "按河北省收费标准80%限价", "region": "河北承德双桥区", "description": "地区：河北承德双桥区；采购单位：河北民族师范学院；项目编号：RUIYI-2026-005；服务内容：2026-2027年造价咨询机构框架协议，拟入围数量为有效响应商的80%；开标时间：2026年5月29日；专门面向中小企业采购"}, {"id": 423, "title": "北京市退休职工活动站2026年度造价咨询单位选取", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "年度框架", "政府投资"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "北京", "description": "地区：北京；采购单位：北京市退休职工活动站；服务内容：2026年度造价咨询单位选取；发布时间：2026年5月8日"}, {"id": 422, "title": "唐山市曹妃甸区农村公路改造提升项目造价咨询服务公开招标", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://ggzyjy.xzspj.tangshan.gov.cn/", "keywords": ["造价咨询", "农村公路", "交通建设", "清单编制", "控制价编制"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "河北唐山曹妃甸区", "description": "地区：河北唐山曹妃甸区；采购单位：唐山市曹妃甸区住房和城乡建设局；服务内容：国家综合货运枢纽补链强链2025年农村公路改造提升项目造价咨询；采用双盲评审；开标时间：2026年5月21日"}, {"id": 420, "title": "2026年度工程造价编制及审核服务项目招标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417853104.html", "keywords": ["造价编制", "造价审核", "工程量清单", "招标控制价", "军队工程"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "186.5万元", "region": "北京房山区", "description": "地区：北京房山区；服务范围：工程造价编制（包1）+工程造价审核（包2）；服务周期3年（1+1+1模式）；采用折扣率报价；开标时间：2026年5月27日"}, {"id": 417, "title": "招标代理及造价咨询服务商采购项目", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://hbs.bidcenter.com.cn/zhaobiao/zbkeyw-24187-0-0-0.html", "keywords": ["招标代理", "造价咨询", "服务商采购", "框架协议"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "未公开", "region": "河北石家庄藁城区", "description": "地区：河北石家庄藁城区；采购单位：河北国津天创污水处理有限责任公司；项目编号：CTZX-202605010；服务内容：招标代理及造价咨询服务商采购；资金来源：自有资金"}, {"id": 416, "title": "东尖塔村棚户区改造二期项目全过程造价咨询", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://hbs.bidcenter.com.cn/zhaobiao/zbkeyw-24187-0-0-0.html", "keywords": ["全过程造价咨询", "棚户区改造", "安置工程", "民生项目"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "未公开", "region": "河北廊坊市", "description": "地区：河北廊坊市；项目类型：东尖塔村棚户区改造二期项目；服务内容：全过程造价咨询服务；所属行业：租赁和商务服务业/商务服务业"}, {"id": 411, "title": "北京市退休职工活动站2026年度造价咨询单位选取", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "年度框架", "政府投资"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "北京", "description": "地区：北京；采购单位：北京市退休职工活动站；服务内容：2026年度造价咨询单位选取；发布时间：2026年5月8日"}, {"id": 410, "title": "唐山市曹妃甸区农村公路改造提升项目造价咨询服务公开招标", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://ggzyjy.xzspj.tangshan.gov.cn/", "keywords": ["造价咨询", "农村公路", "交通建设", "清单编制", "控制价编制"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "河北唐山曹妃甸区", "description": "地区：河北唐山曹妃甸区；采购单位：唐山市曹妃甸区住房和城乡建设局；服务内容：国家综合货运枢纽补链强链2025年农村公路改造提升项目造价咨询；采用双盲评审；开标时间：2026年5月21日"}, {"id": 408, "title": "2026年度工程造价编制及审核服务项目招标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417853104.html", "keywords": ["造价编制", "造价审核", "工程量清单", "招标控制价", "军队工程"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "186.5万元", "region": "北京房山区", "description": "地区：北京房山区；服务范围：工程造价编制（包1）+工程造价审核（包2）；服务周期3年（1+1+1模式）；采用折扣率报价；开标时间：2026年5月27日"}, {"id": 407, "title": "天津市滨海新区土地发展中心造价咨询服务更正公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gzgg/202605/t20260508_26530532.htm", "keywords": ["造价咨询"], "collectedAt": "2026-05-09", "slot": "晚间", "budget": "90万元（6个包，每包15万元）", "region": "天津滨海新区", "description": "地区：天津滨海新区；采购单位：天津市滨海新区土地发展中心；更正内容：服务人员资质要求等；开标时间2026年5月20日"}, {"id": 397, "title": "北京航空航天大学电源可靠性设计分析与评估验证平台定制开发项目", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/", "keywords": ["招标代理", "软件开发", "项目管理"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：北京；采购单位：北京航空航天大学；采购内容：电源可靠性设计分析与评估验证平台"}, {"id": 395, "title": "天津港保税区建设服务中心政府投资项目工程造价咨询服务项目", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/", "keywords": ["造价咨询", "招标代理", "全过程咨询"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "134.1265万元", "description": "地区：天津滨海新区；采购单位：天津港保税区建设服务中心；服务内容：预算编制、变更结算审核"}, {"id": 394, "title": "2026年石家庄海关技术中心试剂耗材采购中标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/", "keywords": ["招标代理", "试剂耗材"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：河北石家庄；采购单位：石家庄海关技术中心；采购内容：试剂耗材采购"}, {"id": 393, "title": "天津大学石化中心全自动原位在线检测高压反应系统采购项目中标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/", "keywords": ["招标代理", "设备采购"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：天津；采购单位：天津大学石化中心；采购内容：全自动原位在线检测高压反应系统"}, {"id": 392, "title": "北京师范大学电感耦合等离子体光谱仪、全自动气体吸附分析仪采购项目中标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/", "keywords": ["招标代理", "设备采购"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：北京；采购单位：北京师范大学；采购内容：电感耦合等离子体光谱仪、全自动气体吸附分析仪"}, {"id": 391, "title": "北京邮电大学沙河校区研究生宿舍变配电及外电源工程采购项目中标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/", "keywords": ["招标代理", "变配电", "工程造价"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：北京；采购单位：北京邮电大学沙河校区；项目名称：研究生宿舍变配电及外电源工程"}, {"id": 374, "title": "天津市滨海新区土地发展中心造价咨询服务更正公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gzgg/202605/t20260508_26530532.htm", "keywords": ["造价咨询"], "collectedAt": "2026-05-09", "slot": "上午", "budget": "90万元（6个包，每包15万元）", "region": "天津", "description": "地区：天津滨海新区；采购单位：天津市滨海新区土地发展中心；预算90万元；开标时间2026年5月20日"}, {"id": 371, "title": "中国农业大学审计处国家农业科技创新港国际农业与全球发展创新基地项目全过程审计服务采购项目中标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/202605/t20260508_26528946.htm", "keywords": ["全过程审计", "造价咨询", "审计服务"], "collectedAt": "2026-05-09", "slot": "上午", "budget": "149.6万元", "region": "北京", "description": "地区：北京；采购单位：中国农业大学；中标金额149.6万元；中标单位：北京和兴工程造价咨询有限公司"}, {"title": "天津市公共资源交易中心（天津市政府采购中心） 天津市公共资源交易中心综合评标评审专家库远程异地评标改造对接项目 (项目编号:TGPC-2026-D-0195)成交公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=954187541", "keywords": ["评审"], "id": 365, "collectedAt": "2026-05-08", "description": "地区：天津市政府采购中心；天津市公共资源交易中心（天津市政府采购中心） 天津市公共资源交易中心综合评标评审专家库远程异地评标改造对接项目 (项目编号:TGPC-2026-D-0195)成交公告", "region": ""}, {"title": "天津市生态环境局2026年天津市建设用地报告评审、监督检查、重点地块监测数据分析项目(项目编号：TGPC-2026-D-0301) 公开招标公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=977451118", "keywords": ["评审"], "id": 364, "collectedAt": "2026-05-08", "description": "地区：天津市政府采购中心；天津市生态环境局2026年天津市建设用地报告评审、监督检查、重点地块监测数据分析项目(项目编号：TGPC-2026-D-0301) 公开招标公告", "region": ""}, {"title": "天津市应急管理局2026年全过程绩效评价管理及项目评审服务项目（项目编号：TGPC-2026-D-0362）公开招标公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=984779778", "keywords": ["评审", "绩效评价"], "id": 363, "collectedAt": "2026-05-08", "description": "地区：天津市政府采购中心；天津市应急管理局2026年全过程绩效评价管理及项目评审服务项目（项目编号：TGPC-2026-D-0362）公开招标公告", "region": ""}, {"title": "天津市审计局协审（造价师）服务项目（项目编号：TGPC-2026-D-0261）竞争性磋商公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=961212394", "keywords": ["造价", "协审", "造价师"], "id": 362, "collectedAt": "2026-05-08", "description": "地区：天津市政府采购中心；天津市审计局协审（造价师）服务项目（项目编号：TGPC-2026-D-0261）竞争性磋商公告", "region": ""}, {"title": "天津市审计局协审（造价师）服务项目 (项目编号:TGPC-2026-D-0261)成交公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=974450586", "keywords": ["造价", "协审", "造价师"], "id": 361, "collectedAt": "2026-05-08", "description": "地区：天津市政府采购中心；天津市审计局协审（造价师）服务项目 (项目编号:TGPC-2026-D-0261)成交公告", "region": ""}, {"id": 450, "title": "顺义区北京会展商务区周边及汽车创新走廊带环境整治提升项目造价咨询", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "环境整治", "商务区", "汽车创新"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京顺义区", "description": "地区：北京顺义区；服务内容：北京会展商务区周边及汽车创新走廊带环境整治提升项目造价咨询服务"}, {"id": 449, "title": "高安屯生活垃圾处理设施废气处理技术改造提升项目造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "环保工程", "废气处理", "技术改造"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京朝阳区", "description": "地区：北京朝阳区；服务内容：高安屯生活垃圾处理设施废气处理技术改造提升项目造价咨询服务；采用比选方式采购"}, {"id": 448, "title": "月亮河片区景观亮化提升工程（招标及造价咨询）比选公告", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "招标代理", "景观亮化", "提升工程"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京通州区", "description": "地区：北京通州区；服务内容：月亮河片区景观亮化提升工程的招标及造价咨询服务；发布时间：2026年5月7日"}, {"id": 447, "title": "密云水库2026年造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "水利工程", "水库项目"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京密云区", "description": "地区：北京密云区；服务内容：密云水库2026年造价咨询服务；发布时间：2026年5月7日"}, {"id": 443, "title": "顺义区北京会展商务区周边及汽车创新走廊带环境整治提升项目造价咨询", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "环境整治", "商务区", "汽车创新"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京顺义区", "description": "地区：北京顺义区；服务内容：北京会展商务区周边及汽车创新走廊带环境整治提升项目造价咨询服务"}, {"id": 442, "title": "高安屯生活垃圾处理设施废气处理技术改造提升项目造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "环保工程", "废气处理", "技术改造"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京朝阳区", "description": "地区：北京朝阳区；服务内容：高安屯生活垃圾处理设施废气处理技术改造提升项目造价咨询服务；采用比选方式采购"}, {"id": 441, "title": "月亮河片区景观亮化提升工程（招标及造价咨询）比选公告", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "招标代理", "景观亮化", "提升工程"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京通州区", "description": "地区：北京通州区；服务内容：月亮河片区景观亮化提升工程的招标及造价咨询服务；发布时间：2026年5月7日"}, {"id": 440, "title": "密云水库2026年造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "水利工程", "水库项目"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京密云区", "description": "地区：北京密云区；服务内容：密云水库2026年造价咨询服务；发布时间：2026年5月7日"}, {"id": 434, "title": "青龙满族自治县及配套设施工程造价咨询服务采购意向", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418241758.html", "keywords": ["造价咨询", "政府采购意向", "基础设施", "青龙县"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "未公开", "region": "河北秦皇岛青龙满族自治县", "description": "地区：河北秦皇岛青龙满族自治县；采购单位：青龙满族自治县住建局；服务内容：及配套设施工程造价咨询服务；拟采购时间：2026年5月"}, {"id": 424, "title": "密云水库2026年造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "水利工程", "水库建设"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "北京密云区", "description": "地区：北京密云区；服务内容：密云水库2026年造价咨询服务；发布时间：2026年5月7日"}, {"id": 421, "title": "南开大学国家基础研究创新提升工程建设项目（化学）全过程造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417646829.html", "keywords": ["全过程造价咨询", "高校建设", "化学实验室", "造价管理"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "100万元（最高限价80万元）", "region": "天津南开区", "description": "地区：天津南开区；采购单位：南开大学；项目编号：NK2026F038；服务内容：招标及合同签订阶段、施工阶段、竣工结算阶段全过程工程造价咨询及管理；开标时间：2026年6月2日；专门面向中小企业采购"}, {"id": 412, "title": "密云水库2026年造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "水利工程", "水库建设"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "北京密云区", "description": "地区：北京密云区；服务内容：密云水库2026年造价咨询服务；发布时间：2026年5月7日"}, {"id": 409, "title": "南开大学国家基础研究创新提升工程建设项目（化学）全过程造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417646829.html", "keywords": ["全过程造价咨询", "高校建设", "化学实验室", "造价管理"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "100万元（最高限价80万元）", "region": "天津南开区", "description": "地区：天津南开区；采购单位：南开大学；项目编号：NK2026F038；服务内容：招标及合同签订阶段、施工阶段、竣工结算阶段全过程工程造价咨询及管理；开标时间：2026年6月2日；专门面向中小企业采购"}, {"id": 403, "title": "南开大学国家基础研究创新提升工程建设项目（生物学）全过程造价咨询服务公开招标公告", "pubDate": "2026-05-07", "source": "天津市政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417624207.html", "keywords": ["全过程造价", "造价咨询", "南开大学"], "collectedAt": "2026-05-09", "slot": "晚间", "budget": "100万元（最高限价75万元）", "region": "天津", "description": "地区：天津南开区；采购单位：南开大学；预算100万元，最高限价75万元；开标时间2026年6月1日"}, {"id": 402, "title": "南开大学国家基础研究创新提升工程建设项目（化学）全过程造价咨询服务公开招标公告", "pubDate": "2026-05-07", "source": "天津市政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417646829.html", "keywords": ["全过程造价", "造价咨询", "南开大学"], "collectedAt": "2026-05-09", "slot": "晚间", "budget": "100万元（最高限价80万元）", "region": "天津", "description": "地区：天津南开区；采购单位：南开大学；预算100万元，最高限价80万元；开标时间2026年6月2日"}, {"id": 399, "title": "中国信息通信研究院信息通信产品中试验证平台项目公开招标公告", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/", "keywords": ["招标代理", "信息化", "项目管理"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：北京；采购单位：中国信息通信研究院；采购内容：信息通信产品中试验证平台项目"}, {"id": 398, "title": "中国环境监测总站国家地表水环境质量监测运行维护项目公开招标公告", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/", "keywords": ["招标代理", "环境监测", "项目管理"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：北京；采购单位：中国环境监测总站；采购内容：国家地表水环境质量监测运行维护"}, {"id": 373, "title": "南开大学国家基础研究创新提升工程建设项目（化学）全过程造价咨询服务公开招标公告", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417646829.html", "keywords": ["全过程造价", "造价咨询"], "collectedAt": "2026-05-09", "slot": "上午", "budget": "100万元（最高限价80万元）", "region": "天津", "description": "地区：天津南开区；采购单位：南开大学；预算100万元，最高限价80万元；开标时间2026年6月2日"}, {"id": 433, "title": "隆化县政府投资项目造价咨询服务框架协议采购", "pubDate": "2026-05-06", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417875000.html", "keywords": ["造价咨询", "框架协议", "政府投资", "会计事务", "隆化县"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "未公开", "region": "河北承德隆化县", "description": "地区：河北承德隆化县；采购单位：隆化县财政局；服务内容：政府投资项目造价咨询服务、会计事务服务框架协议采购；采用双盲评审；预计采购时间：2026年5-6月"}, {"id": 413, "title": "南开大学津南校区学生公寓(二期)项目全过程造价咨询服务", "pubDate": "2026-05-06", "source": "中国政府采购网", "link": "https://www.chinamae.com/purchases/dab8115d40184342c844c6570919d430.html", "keywords": ["全过程造价咨询", "高校建设", "学生公寓", "造价管理"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "180万元（最高限价120万元）", "region": "天津南开区", "description": "地区：天津南开区；采购单位：南开大学；项目编号：NK2026F036；服务内容：招标及合同签订阶段、施工阶段、竣工结算阶段全过程工程造价咨询及管理；开标时间：2026年5月27日；专门面向中小企业采购"}, {"id": 400, "title": "天津出入境边防检查总站考勤系统建设项目竞争性磋商公告", "pubDate": "2026-05-01", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/", "keywords": ["招标代理", "项目管理", "考勤系统"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：天津；采购单位：中华人民共和国天津出入境边防检查总站；采购内容：考勤系统建设"}, {"id": 266, "title": "天津边检总站考勤系统建设项目竞争性磋商公告", "pubDate": "2026-05-01", "source": "中国政府采购网", "link": "https://www.ccgp.gov.cn/cggg/zygg/index.htm", "keywords": ["项目管理", "招标代理"], "collectedAt": "2026-05-04", "slot": "下午", "budget": "未知", "description": "地区：天津；采购单位：中华人民共和国天津出入境边防检查总站；项目名称：考勤系统建设项目", "region": ""}, {"id": 431, "title": "天津市滨海新区土地发展中心造价咨询服务公开招标", "pubDate": "2026-04-29", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202604/t20260429_26484422.htm", "keywords": ["造价咨询", "土地开发", "行政管理", "框架协议", "滨海新区"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "90万元（分6包，每包15万元）", "region": "天津滨海新区", "description": "地区：天津滨海新区；采购单位：天津市滨海新区土地发展中心；项目编号：TJJH-2026-FW032；服务内容：土地业务和行政管理类项目造价咨询服务；分6个包，兼投不兼中；服务期限1年；开标时间：2026年5月20日；专门面向中小微企业"}, {"id": 415, "title": "天津市滨海新区土地发展中心造价咨询服务", "pubDate": "2026-04-29", "source": "天津市政府采购网", "link": "http://tjgp.cz.tj.gov.cn/portal/documentView.do?id=983950772&method=view", "keywords": ["造价咨询", "土地业务", "行政管理", "框架协议"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "90万元（分6包，每包15万元）", "region": "天津滨海新区", "description": "地区：天津滨海新区；采购单位：天津市滨海新区土地发展中心；项目编号：TJJH-2026-FW032；服务内容：土地业务和行政管理类项目造价咨询服务；分6个包，每包15万元；服务期1年；开标时间：2026年5月20日；专门面向中小微企业采购"}, {"id": 414, "title": "廊坊经济技术开发区东部片区基础设施及配套工程(一期)全过程造价咨询", "pubDate": "2026-04-28", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202604/t20260428_26471144.htm", "keywords": ["全过程造价咨询", "基础设施", "市政工程", "配套工程"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "157.642万元", "region": "河北廊坊开发区", "description": "地区：河北廊坊经济技术开发区；采购单位：廊坊经济技术开发区住房和城乡建设局；项目编号：Z1310002600802001；服务内容：道路及配套设施工程、厂站工程等全过程造价咨询；采用双盲评审；开标时间：2026年5月21日；专门面向中小企业采购"}, {"id": 382, "title": "廊坊经济技术开发区东部片区基础设施及配套工程(一期)全过程造价咨询公开招标公告", "pubDate": "2026-04-28", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202604/t20260428_26471144.htm", "keywords": ["全过程造价", "造价咨询", "基础设施"], "collectedAt": "2026-05-09", "slot": "上午", "budget": "157.642万元", "region": "河北廊坊", "description": "地区：河北廊坊；采购单位：廊坊经济技术开发区住房和城乡建设局；预算157.642万元；开标时间2026年5月21日"}, {"id": 23, "title": "天津市审计局协审（造价师）服务项目成交公告", "pubDate": "2026-04-20", "source": "天津市政府采购网", "link": "http://ccgp-tianjin.gov.cn/", "keywords": ["造价"], "collectedAt": "2026-04-21", "slot": "早间", "region": ""}, {"id": 20, "title": "天津市静海区团泊水库东围堤建设工程生态环境保护全过程咨询服务竞争性磋商公告", "pubDate": "2026-04-13", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202604/t20260413_26398296.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午", "region": ""}, {"id": 211, "title": "台湖镇选聘2026年度造价咨询公司公开招标公告", "pubDate": "2026-03-24", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260324_26307237.htm", "keywords": ["造价咨询", "全过程咨询"], "collectedAt": "2026-05-02", "slot": "上午", "budget": "419万元", "description": "地区：北京通州；采购单位：北京市通州区台湖镇人民政府；预算金额：419万元（分5个包，每包83.8万元）；采购方式：公开招标；服务内容：房屋建筑类、市政工程类、拆改移工程类、环境整治类、园林绿化类造价咨询服务；服务期：签订合同之日起一年；投标截止：2026-04-15 09:00", "region": ""}, {"id": 198, "title": "北京市通州区台湖镇选聘2026年度造价咨询公司公开招标公告", "pubDate": "2026-03-24", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260324_26307237.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-30", "slot": "晚间", "budget": "419万元", "description": "地区：北京通州；采购单位：台湖镇人民政府；采购5个包，每包83.8万元，包括房屋建筑类、市政工程类、拆改移工程类、环境整治类、园林绿化类", "region": ""}, {"id": 165, "title": "北京市通州区台湖镇选聘2026年度造价咨询公司公开招标公告", "pubDate": "2026-03-24", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260324_26307237.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-28", "slot": "上午", "budget": "419万元", "description": "地区：北京通州；采购单位：北京市通州区台湖镇人民政府；预算金额419万元（分5个包，每包83.8万元）；采购内容：房屋建筑类、市政工程类、拆改移工程类、环境整治类、园林绿化类造价咨询；服务期：一年；投标截止：2026-04-15 09:00", "region": ""}, {"id": 114, "title": "台湖镇选聘2026年度造价咨询公司公开招标公告", "pubDate": "2026-03-24", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260324_26307237.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-27", "slot": "上午", "description": "地区：北京通州；采购单位：台湖镇人民政府；选聘2026年度造价咨询公司", "region": ""}, {"id": 113, "title": "北京外交人员服务局2026年齐家园外交公寓10号楼改造工程造价咨询服务采购项目", "pubDate": "2026-03-20", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/gkzb/202603/t20260320_26296246.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-27", "slot": "上午", "description": "地区：北京；采购单位：北京外交人员服务局；服务内容：齐家园外交公寓10号楼改造工程造价咨询服务", "region": ""}, {"id": 49, "title": "北京师范大学昌平校园F区能源工程全过程跟踪审计服务采购项目", "pubDate": "2026-03-18", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/gkzb/202603/t20260318_26285258.htm", "keywords": ["全过程咨询", "造价咨询", "审计服务"], "collectedAt": "2026-04-23", "slot": "晚间", "description": "地区：北京；预算金额180万元；服务内容包括概算审核、招标控制价审核、过程结算审核、竣工结算审核；计划工期2026年4月至2029年6月；需驻场服务", "region": ""}, {"id": 178, "title": "天津经济技术开发区审计局2026年工程造价咨询及竣工决算服务项目公开招标公告", "pubDate": "2026-03-03", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260303_26214798.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-29", "slot": "上午", "budget": "300万元", "description": "地区：天津滨海新区；采购单位：天津经济技术开发区审计局；项目编号：TJBHGP-TEDA-2026-002；分3个包，每包100万元；服务内容：工程造价咨询及竣工决算服务；服务期：2026-04-01至2027-03-31；开标时间：2026-03-26 09:30", "region": ""}, {"id": 272, "title": "河北雄安新区2026年财政投资评审造价咨询服务公开招标", "pubDate": "2026-01-21", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202601/t20260121_26097735.htm", "keywords": ["造价咨询"], "collectedAt": "2026-05-04", "slot": "下午", "budget": "2041万元", "description": "地区：河北雄安；采购单位：雄安新区财政投资评审中心；项目名称：2026年河北雄安新区财政投资评审造价咨询服务；预算金额：2041万元；服务内容：竣工结算评审", "region": ""}, {"id": 116, "title": "2026年河北雄安新区财政投资评审造价咨询服务公开招标公告", "pubDate": "2026-01-21", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202601/t20260121_26097735.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-27", "slot": "上午", "budget": "2041万元", "description": "地区：河北雄安；采购单位：雄安新区财政投资评审中心；预算金额2041万元（分5个包）；服务内容包括雄东片区、容西片区安置房项目竣工结算评审；截止时间：2026-02-11", "region": ""}]};
+        const EMBEDDED_DATA = {"lastUpdate": "2026-05-13 08:47", "totalCount": 79, "announcements": [{"id": 318, "title": "北京林业大学雄安校区全过程造价咨询服务（四标段）", "pubDate": "2026-05-16", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/gkzb/202505/t20250516_24612768.htm", "keywords": ["全过程咨询", "造价咨询", "项目管理"], "collectedAt": "2026-05-06", "slot": "下午", "budget": "429.82万元", "description": "地区：北京；采购单位：北京林业大学；服务内容：工程量清单及招标控制价编制、合同价重计量、施工过程造价咨询、竣工结算审核；开标：2026-06-11", "region": "北京"}, {"title": "石家庄市行政审批局工程建设项目评审评估服务投资咨询评估服务框架协议采购征集公告", "pubDate": "2026-05-12", "source": "中国政府采购网", "link": "http://www.ccgp-hebei.gov.cn/../../province/kjxy/zjgg/202605/t20260506_2360552.html", "keywords": ["评审"], "id": 429, "collectedAt": "2026-05-12", "description": "地区：河北省政府采购网-张家口；石家庄市行政审批局工程建设项目评审评估服务投资咨询评估服务框架协议采购征集公告", "region": "河北"}, {"title": "石家庄市行政审批局工程建设项目评审评估服务环境影响技术评估服务框架协议采购征...", "pubDate": "2026-05-12", "source": "中国政府采购网", "link": "http://www.ccgp-hebei.gov.cn/../../province/kjxy/zjgg/202605/t20260506_2360556.html", "keywords": ["评审"], "id": 428, "collectedAt": "2026-05-12", "description": "地区：河北省政府采购网-张家口；石家庄市行政审批局工程建设项目评审评估服务环境影响技术评估服务框架协议采购征...", "region": "河北"}, {"title": "关于开展2025年度政府采购评审专家培训补考的通知", "pubDate": "2026-05-12", "source": "中国政府采购网", "link": "http://www.ccgp-hebei.gov.cn/../../province/zytz/202511/t20251111_2285824.html", "keywords": ["评审"], "id": 427, "collectedAt": "2026-05-12", "description": "地区：河北省政府采购网-张家口；关于开展2025年度政府采购评审专家培训补考的通知", "region": "河北"}, {"title": "河北省财政厅关于印发《河北省政府采购“双盲”评审文件示范文本（2.0版）》的通知", "pubDate": "2026-05-12", "source": "中国政府采购网", "link": "http://www.ccgp-hebei.gov.cn/../../province/zytz/202601/t20260129_2322298.html", "keywords": ["评审"], "id": 426, "collectedAt": "2026-05-12", "description": "地区：河北省政府采购网-张家口；河北省财政厅关于印发《河北省政府采购“双盲”评审文件示范文本（2.0版）》的通知", "region": "河北"}, {"title": "河北省政府采购“双盲”评审项目招标文件示范文本(2.0版)", "pubDate": "2026-05-12", "source": "中国政府采购网", "link": "http://www.ccgp-hebei.gov.cn/../../province/PicNews/202602/t20260204_2325217.html", "keywords": ["评审"], "id": 425, "collectedAt": "2026-05-12", "description": "地区：河北省政府采购网-张家口；河北省政府采购“双盲”评审项目招标文件示范文本(2.0版)", "region": "河北"}, {"id": 445, "title": "团泊东（津静挂）2019-44号地项目造价咨询复审", "pubDate": "2026-05-11", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418382301.html", "keywords": ["造价咨询复审", "房地产项目", "竞争性磋商", "结算审核"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "天津", "description": "地区：天津河西区；采购单位：天津玺城开局城市发展有限公司；项目编号：YLB-MFTJ-DL-#；服务内容：团泊东（津静挂）2019-44号地项目造价咨询复审；开标时间：2026年5月21日；项目负责人须具有土建专业一级注册造价工程师证书"}, {"id": 444, "title": "新媒体专业部给排水管线改造工程（造价咨询）", "pubDate": "2026-05-11", "source": "中国政府采购网", "link": "https://ggzyfw.beijing.gov.cn/jyxxcggg/20260511/5526007.html", "keywords": ["造价咨询", "给排水管线改造", "工程量清单编制", "最高投标限价编制"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "1.48094万元", "region": "北京", "description": "地区：北京海淀区；采购单位：北京新媒体职业学院；项目编号：1100002****200168944-XM002；服务内容：完成新媒体专业部给排水管线改造工程的造价咨询服务，包括工程量清单编制、最高投标限价编制及其他配合工作等；开标时间：2026年5月22日；专门面向中小企业采购"}, {"id": 438, "title": "团泊东（津静挂）2019-44号地项目造价咨询复审", "pubDate": "2026-05-11", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418382301.html", "keywords": ["造价咨询复审", "房地产项目", "竞争性磋商", "结算审核"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "天津", "description": "地区：天津河西区；采购单位：天津玺城开局城市发展有限公司；项目编号：YLB-MFTJ-DL-#；服务内容：团泊东（津静挂）2019-44号地项目造价咨询复审；开标时间：2026年5月21日；项目负责人须具有土建专业一级注册造价工程师证书"}, {"id": 437, "title": "新媒体专业部给排水管线改造工程（造价咨询）", "pubDate": "2026-05-11", "source": "中国政府采购网", "link": "https://ggzyfw.beijing.gov.cn/jyxxcggg/20260511/5526007.html", "keywords": ["造价咨询", "给排水管线改造", "工程量清单编制", "最高投标限价编制"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "1.48094万元", "region": "北京", "description": "地区：北京海淀区；采购单位：北京新媒体职业学院；项目编号：1100002****200168944-XM002；服务内容：完成新媒体专业部给排水管线改造工程的造价咨询服务，包括工程量清单编制、最高投标限价编制及其他配合工作等；开标时间：2026年5月22日；专门面向中小企业采购"}, {"id": 432, "title": "2026年5-6月河北省造价咨询服务入库招标精准清单", "pubDate": "2026-05-11", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418241758.html", "keywords": ["造价咨询", "入库招标", "框架协议", "政府采购意向", "河北省"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "多项目总额预计超2000万元", "region": "河北", "description": "地区：河北省全域（承德、石家庄、廊坊、秦皇岛、沧州、保定等）；涵盖：兴城提标扩能建设项目全过程造价咨询、宽城新能源汽车充电基础设施造价咨询、高端计量技术创新基地全过程造价咨询、文安县职教中心分校新建工程第三方造价咨询、安新县燃气安全设施更新改造项目造价咨询等多个重大项目"}, {"id": 452, "title": "邱县2026年小麦病虫害防控药品采购项目（二次）", "pubDate": "2026-05-09", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202605/t20260509_26534330.htm", "keywords": ["造价咨询公司", "代理机构", "河北天诺", "政府采购"], "collectedAt": "2026-05-13", "slot": "早间", "budget": "134.642957万元", "region": "河北", "description": "地区：河北省邯郸市邱县；采购单位：邱县农业农村局；项目编号：HBTNCG-20260414；代理机构：河北天诺工程造价咨询有限公司；采购内容：联苯·噻虫胺、吡唑醚菌酯、氨基酸水溶肥、芸苔素等；开标时间：2026年6月1日；采用双盲评审"}, {"id": 436, "title": "安新县燃气安全设施更新改造项目全过程造价咨询服务", "pubDate": "2026-05-09", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418241758.html", "keywords": ["全过程造价咨询", "燃气工程", "安全改造", "雄安新区", "安新县"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "未公开", "region": "河北", "description": "地区：河北保定雄安新区安新县；采购单位：安新县住房和城乡建设局；服务内容：燃气安全设施更新改造项目全过程造价咨询服务采购；拟采购时间：2026年5月"}, {"id": 419, "title": "2026年~2028年造价咨询服务采购公告", "pubDate": "2026-05-09", "source": "中国政府采购网", "link": "http://www.yfbzb.com/inviteBid/detail/20260509_595512991.html", "keywords": ["造价咨询", "全过程咨询", "成本测算", "结算审核", "数据中心"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京丰台区；采购单位：中国金茂下属公司；服务内容：项目工程造价有关所有事宜，包括方案成本测算、预结算编制与审核、工程量清单及标底编制、清标工作、变更签证审核、动态成本监控等；服务期限3年；项目负责人须有8年以上经验，具备注册造价工程师证书"}, {"id": 418, "title": "工程造价咨询企业库招标公告", "pubDate": "2026-05-09", "source": "中国政府采购网", "link": "https://m.bidizhaobiao.com/info-769927911.html", "keywords": ["造价咨询企业库", "预算编制", "预算审核", "跟踪审计", "结算审核"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "未公开（折扣率报价）", "region": "河北", "description": "地区：河北石家庄；项目编号：2026-JL0501-F1004；服务内容：引入多家造价咨询公司，承担预算编制、预算审核、进度款跟踪审计、结算初审等任务；服务期限2年，可续签最多2次；军队采购项目"}, {"id": 451, "title": "河北省公安厅交通管理局审计业务费采购（B包：造价咨询服务）", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202605/t20260508_26531757.htm", "keywords": ["造价咨询", "审计业务", "竞争性磋商", "河北省"], "collectedAt": "2026-05-13", "slot": "早间", "budget": "最高限价为《河北省工程造价咨询服务收费管理暂行办法》收费标准的80%", "region": "河北", "description": "地区：河北省石家庄市；采购单位：河北省公安厅交通管理局本级；项目编号：BWZB2026-04N36；服务内容：本项目分2个标包，B包为造价咨询服务，最高限价为《河北省工程造价咨询服务收费管理暂行办法》（冀建市研[2017]2号）文件收费标准的80%；开标时间：2026年5月21日；专门面向中小企业采购"}, {"id": 446, "title": "北京市退休职工活动站2026年度造价咨询单位选取", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "年度框架", "单位选取"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京；采购单位：北京市退休职工活动站；服务内容：2026年度造价咨询单位选取；发布时间：2026年5月8日"}, {"id": 439, "title": "北京市退休职工活动站2026年度造价咨询单位选取", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "年度框架", "单位选取"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京；采购单位：北京市退休职工活动站；服务内容：2026年度造价咨询单位选取；发布时间：2026年5月8日"}, {"id": 435, "title": "献县热源建设项目工程造价咨询采购意向", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418241758.html", "keywords": ["造价咨询", "热源建设", "市政工程", "献县"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "未公开", "region": "河北", "description": "地区：河北沧州献县；采购单位：献县住房和城乡建设局；服务内容：热源建设项目工程造价咨询；拟采购时间：2026年5月"}, {"id": 430, "title": "河北民族师范学院2026-2027年造价咨询机构框架协议采购项目", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://www.hbun.edu.cn/zcglc/info/1056/6342.htm", "keywords": ["造价咨询", "框架协议", "高校建设", "承德"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "按河北省收费标准80%限价", "region": "河北", "description": "地区：河北承德双桥区；采购单位：河北民族师范学院；项目编号：RUIYI-2026-005；服务内容：2026-2027年造价咨询机构框架协议，拟入围数量为有效响应商的80%；开标时间：2026年5月29日；专门面向中小企业采购"}, {"id": 423, "title": "北京市退休职工活动站2026年度造价咨询单位选取", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "年度框架", "政府投资"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "北京", "description": "地区：北京；采购单位：北京市退休职工活动站；服务内容：2026年度造价咨询单位选取；发布时间：2026年5月8日"}, {"id": 422, "title": "唐山市曹妃甸区农村公路改造提升项目造价咨询服务公开招标", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://ggzyjy.xzspj.tangshan.gov.cn/", "keywords": ["造价咨询", "农村公路", "交通建设", "清单编制", "控制价编制"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "河北", "description": "地区：河北唐山曹妃甸区；采购单位：唐山市曹妃甸区住房和城乡建设局；服务内容：国家综合货运枢纽补链强链2025年农村公路改造提升项目造价咨询；采用双盲评审；开标时间：2026年5月21日"}, {"id": 420, "title": "2026年度工程造价编制及审核服务项目招标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417853104.html", "keywords": ["造价编制", "造价审核", "工程量清单", "招标控制价", "军队工程"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "186.5万元", "region": "北京", "description": "地区：北京房山区；服务范围：工程造价编制（包1）+工程造价审核（包2）；服务周期3年（1+1+1模式）；采用折扣率报价；开标时间：2026年5月27日"}, {"id": 417, "title": "招标代理及造价咨询服务商采购项目", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://hbs.bidcenter.com.cn/zhaobiao/zbkeyw-24187-0-0-0.html", "keywords": ["招标代理", "造价咨询", "服务商采购", "框架协议"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "未公开", "region": "河北", "description": "地区：河北石家庄藁城区；采购单位：河北国津天创污水处理有限责任公司；项目编号：CTZX-202605010；服务内容：招标代理及造价咨询服务商采购；资金来源：自有资金"}, {"id": 416, "title": "东尖塔村棚户区改造二期项目全过程造价咨询", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://hbs.bidcenter.com.cn/zhaobiao/zbkeyw-24187-0-0-0.html", "keywords": ["全过程造价咨询", "棚户区改造", "安置工程", "民生项目"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "未公开", "region": "河北", "description": "地区：河北廊坊市；项目类型：东尖塔村棚户区改造二期项目；服务内容：全过程造价咨询服务；所属行业：租赁和商务服务业/商务服务业"}, {"id": 411, "title": "北京市退休职工活动站2026年度造价咨询单位选取", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "年度框架", "政府投资"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "北京", "description": "地区：北京；采购单位：北京市退休职工活动站；服务内容：2026年度造价咨询单位选取；发布时间：2026年5月8日"}, {"id": 410, "title": "唐山市曹妃甸区农村公路改造提升项目造价咨询服务公开招标", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://ggzyjy.xzspj.tangshan.gov.cn/", "keywords": ["造价咨询", "农村公路", "交通建设", "清单编制", "控制价编制"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "河北", "description": "地区：河北唐山曹妃甸区；采购单位：唐山市曹妃甸区住房和城乡建设局；服务内容：国家综合货运枢纽补链强链2025年农村公路改造提升项目造价咨询；采用双盲评审；开标时间：2026年5月21日"}, {"id": 408, "title": "2026年度工程造价编制及审核服务项目招标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417853104.html", "keywords": ["造价编制", "造价审核", "工程量清单", "招标控制价", "军队工程"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "186.5万元", "region": "北京", "description": "地区：北京房山区；服务范围：工程造价编制（包1）+工程造价审核（包2）；服务周期3年（1+1+1模式）；采用折扣率报价；开标时间：2026年5月27日"}, {"id": 407, "title": "天津市滨海新区土地发展中心造价咨询服务更正公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gzgg/202605/t20260508_26530532.htm", "keywords": ["造价咨询"], "collectedAt": "2026-05-09", "slot": "晚间", "budget": "90万元（6个包，每包15万元）", "region": "天津", "description": "地区：天津滨海新区；采购单位：天津市滨海新区土地发展中心；更正内容：服务人员资质要求等；开标时间2026年5月20日"}, {"id": 397, "title": "北京航空航天大学电源可靠性设计分析与评估验证平台定制开发项目", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/", "keywords": ["招标代理", "软件开发", "项目管理"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：北京；采购单位：北京航空航天大学；采购内容：电源可靠性设计分析与评估验证平台", "region": "北京"}, {"id": 395, "title": "天津港保税区建设服务中心政府投资项目工程造价咨询服务项目", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/", "keywords": ["造价咨询", "招标代理", "全过程咨询"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "134.1265万元", "description": "地区：天津滨海新区；采购单位：天津港保税区建设服务中心；服务内容：预算编制、变更结算审核", "region": "天津"}, {"id": 394, "title": "2026年石家庄海关技术中心试剂耗材采购中标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/", "keywords": ["招标代理", "试剂耗材"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：河北石家庄；采购单位：石家庄海关技术中心；采购内容：试剂耗材采购", "region": "河北"}, {"id": 393, "title": "天津大学石化中心全自动原位在线检测高压反应系统采购项目中标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/", "keywords": ["招标代理", "设备采购"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：天津；采购单位：天津大学石化中心；采购内容：全自动原位在线检测高压反应系统", "region": "天津"}, {"id": 392, "title": "北京师范大学电感耦合等离子体光谱仪、全自动气体吸附分析仪采购项目中标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/", "keywords": ["招标代理", "设备采购"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：北京；采购单位：北京师范大学；采购内容：电感耦合等离子体光谱仪、全自动气体吸附分析仪", "region": "北京"}, {"id": 391, "title": "北京邮电大学沙河校区研究生宿舍变配电及外电源工程采购项目中标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/", "keywords": ["招标代理", "变配电", "工程造价"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：北京；采购单位：北京邮电大学沙河校区；项目名称：研究生宿舍变配电及外电源工程", "region": "北京"}, {"id": 374, "title": "天津市滨海新区土地发展中心造价咨询服务更正公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gzgg/202605/t20260508_26530532.htm", "keywords": ["造价咨询"], "collectedAt": "2026-05-09", "slot": "上午", "budget": "90万元（6个包，每包15万元）", "region": "天津", "description": "地区：天津滨海新区；采购单位：天津市滨海新区土地发展中心；预算90万元；开标时间2026年5月20日"}, {"id": 371, "title": "中国农业大学审计处国家农业科技创新港国际农业与全球发展创新基地项目全过程审计服务采购项目中标公告", "pubDate": "2026-05-08", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/zbgg/202605/t20260508_26528946.htm", "keywords": ["全过程审计", "造价咨询", "审计服务"], "collectedAt": "2026-05-09", "slot": "上午", "budget": "149.6万元", "region": "北京", "description": "地区：北京；采购单位：中国农业大学；中标金额149.6万元；中标单位：北京和兴工程造价咨询有限公司"}, {"title": "天津市公共资源交易中心（天津市政府采购中心） 天津市公共资源交易中心综合评标评审专家库远程异地评标改造对接项目 (项目编号:TGPC-2026-D-0195)成交公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=954187541", "keywords": ["评审"], "id": 365, "collectedAt": "2026-05-08", "description": "地区：天津市政府采购中心；天津市公共资源交易中心（天津市政府采购中心） 天津市公共资源交易中心综合评标评审专家库远程异地评标改造对接项目 (项目编号:TGPC-2026-D-0195)成交公告", "region": "天津"}, {"title": "天津市生态环境局2026年天津市建设用地报告评审、监督检查、重点地块监测数据分析项目(项目编号：TGPC-2026-D-0301) 公开招标公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=977451118", "keywords": ["评审"], "id": 364, "collectedAt": "2026-05-08", "description": "地区：天津市政府采购中心；天津市生态环境局2026年天津市建设用地报告评审、监督检查、重点地块监测数据分析项目(项目编号：TGPC-2026-D-0301) 公开招标公告", "region": "天津"}, {"title": "天津市应急管理局2026年全过程绩效评价管理及项目评审服务项目（项目编号：TGPC-2026-D-0362）公开招标公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=984779778", "keywords": ["评审", "绩效评价"], "id": 363, "collectedAt": "2026-05-08", "description": "地区：天津市政府采购中心；天津市应急管理局2026年全过程绩效评价管理及项目评审服务项目（项目编号：TGPC-2026-D-0362）公开招标公告", "region": "天津"}, {"title": "天津市审计局协审（造价师）服务项目（项目编号：TGPC-2026-D-0261）竞争性磋商公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=961212394", "keywords": ["造价", "协审", "造价师"], "id": 362, "collectedAt": "2026-05-08", "description": "地区：天津市政府采购中心；天津市审计局协审（造价师）服务项目（项目编号：TGPC-2026-D-0261）竞争性磋商公告", "region": "天津"}, {"title": "天津市审计局协审（造价师）服务项目 (项目编号:TGPC-2026-D-0261)成交公告", "pubDate": "2026-05-08", "source": "天津市政府采购网", "link": "http://www.ccgp-tianjin.gov.cn/portal/documentView.do?method=view&id=974450586", "keywords": ["造价", "协审", "造价师"], "id": 361, "collectedAt": "2026-05-08", "description": "地区：天津市政府采购中心；天津市审计局协审（造价师）服务项目 (项目编号:TGPC-2026-D-0261)成交公告", "region": "天津"}, {"id": 450, "title": "顺义区北京会展商务区周边及汽车创新走廊带环境整治提升项目造价咨询", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "环境整治", "商务区", "汽车创新"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京顺义区；服务内容：北京会展商务区周边及汽车创新走廊带环境整治提升项目造价咨询服务"}, {"id": 449, "title": "高安屯生活垃圾处理设施废气处理技术改造提升项目造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "环保工程", "废气处理", "技术改造"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京朝阳区；服务内容：高安屯生活垃圾处理设施废气处理技术改造提升项目造价咨询服务；采用比选方式采购"}, {"id": 448, "title": "月亮河片区景观亮化提升工程（招标及造价咨询）比选公告", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "招标代理", "景观亮化", "提升工程"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京通州区；服务内容：月亮河片区景观亮化提升工程的招标及造价咨询服务；发布时间：2026年5月7日"}, {"id": 447, "title": "密云水库2026年造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "水利工程", "水库项目"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京密云区；服务内容：密云水库2026年造价咨询服务；发布时间：2026年5月7日"}, {"id": 443, "title": "顺义区北京会展商务区周边及汽车创新走廊带环境整治提升项目造价咨询", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "环境整治", "商务区", "汽车创新"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京顺义区；服务内容：北京会展商务区周边及汽车创新走廊带环境整治提升项目造价咨询服务"}, {"id": 442, "title": "高安屯生活垃圾处理设施废气处理技术改造提升项目造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "环保工程", "废气处理", "技术改造"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京朝阳区；服务内容：高安屯生活垃圾处理设施废气处理技术改造提升项目造价咨询服务；采用比选方式采购"}, {"id": 441, "title": "月亮河片区景观亮化提升工程（招标及造价咨询）比选公告", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "招标代理", "景观亮化", "提升工程"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京通州区；服务内容：月亮河片区景观亮化提升工程的招标及造价咨询服务；发布时间：2026年5月7日"}, {"id": 440, "title": "密云水库2026年造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "水利工程", "水库项目"], "collectedAt": "2026-05-12", "slot": "晚间", "budget": "未公开", "region": "北京", "description": "地区：北京密云区；服务内容：密云水库2026年造价咨询服务；发布时间：2026年5月7日"}, {"id": 434, "title": "青龙满族自治县及配套设施工程造价咨询服务采购意向", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-418241758.html", "keywords": ["造价咨询", "政府采购意向", "基础设施", "青龙县"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "未公开", "region": "河北", "description": "地区：河北秦皇岛青龙满族自治县；采购单位：青龙满族自治县住建局；服务内容：及配套设施工程造价咨询服务；拟采购时间：2026年5月"}, {"id": 424, "title": "密云水库2026年造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "水利工程", "水库建设"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "北京", "description": "地区：北京密云区；服务内容：密云水库2026年造价咨询服务；发布时间：2026年5月7日"}, {"id": 421, "title": "南开大学国家基础研究创新提升工程建设项目（化学）全过程造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417646829.html", "keywords": ["全过程造价咨询", "高校建设", "化学实验室", "造价管理"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "100万元（最高限价80万元）", "region": "天津", "description": "地区：天津南开区；采购单位：南开大学；项目编号：NK2026F038；服务内容：招标及合同签订阶段、施工阶段、竣工结算阶段全过程工程造价咨询及管理；开标时间：2026年6月2日；专门面向中小企业采购"}, {"id": 412, "title": "密云水库2026年造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://www.bidizhaobiao.com/tag_2_46/", "keywords": ["造价咨询", "水利工程", "水库建设"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "未公开", "region": "北京", "description": "地区：北京密云区；服务内容：密云水库2026年造价咨询服务；发布时间：2026年5月7日"}, {"id": 409, "title": "南开大学国家基础研究创新提升工程建设项目（化学）全过程造价咨询服务", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417646829.html", "keywords": ["全过程造价咨询", "高校建设", "化学实验室", "造价管理"], "collectedAt": "2026-05-11", "slot": "下午", "budget": "100万元（最高限价80万元）", "region": "天津", "description": "地区：天津南开区；采购单位：南开大学；项目编号：NK2026F038；服务内容：招标及合同签订阶段、施工阶段、竣工结算阶段全过程工程造价咨询及管理；开标时间：2026年6月2日；专门面向中小企业采购"}, {"id": 403, "title": "南开大学国家基础研究创新提升工程建设项目（生物学）全过程造价咨询服务公开招标公告", "pubDate": "2026-05-07", "source": "天津市政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417624207.html", "keywords": ["全过程造价", "造价咨询", "南开大学"], "collectedAt": "2026-05-09", "slot": "晚间", "budget": "100万元（最高限价75万元）", "region": "天津", "description": "地区：天津南开区；采购单位：南开大学；预算100万元，最高限价75万元；开标时间2026年6月1日"}, {"id": 402, "title": "南开大学国家基础研究创新提升工程建设项目（化学）全过程造价咨询服务公开招标公告", "pubDate": "2026-05-07", "source": "天津市政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417646829.html", "keywords": ["全过程造价", "造价咨询", "南开大学"], "collectedAt": "2026-05-09", "slot": "晚间", "budget": "100万元（最高限价80万元）", "region": "天津", "description": "地区：天津南开区；采购单位：南开大学；预算100万元，最高限价80万元；开标时间2026年6月2日"}, {"id": 399, "title": "中国信息通信研究院信息通信产品中试验证平台项目公开招标公告", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/", "keywords": ["招标代理", "信息化", "项目管理"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：北京；采购单位：中国信息通信研究院；采购内容：信息通信产品中试验证平台项目", "region": "北京"}, {"id": 398, "title": "中国环境监测总站国家地表水环境质量监测运行维护项目公开招标公告", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/", "keywords": ["招标代理", "环境监测", "项目管理"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：北京；采购单位：中国环境监测总站；采购内容：国家地表水环境质量监测运行维护", "region": "北京"}, {"id": 373, "title": "南开大学国家基础研究创新提升工程建设项目（化学）全过程造价咨询服务公开招标公告", "pubDate": "2026-05-07", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417646829.html", "keywords": ["全过程造价", "造价咨询"], "collectedAt": "2026-05-09", "slot": "上午", "budget": "100万元（最高限价80万元）", "region": "天津", "description": "地区：天津南开区；采购单位：南开大学；预算100万元，最高限价80万元；开标时间2026年6月2日"}, {"id": 433, "title": "隆化县政府投资项目造价咨询服务框架协议采购", "pubDate": "2026-05-06", "source": "中国政府采购网", "link": "https://m.bidcenter.com.cn/news-1-417875000.html", "keywords": ["造价咨询", "框架协议", "政府投资", "会计事务", "隆化县"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "未公开", "region": "河北", "description": "地区：河北承德隆化县；采购单位：隆化县财政局；服务内容：政府投资项目造价咨询服务、会计事务服务框架协议采购；采用双盲评审；预计采购时间：2026年5-6月"}, {"id": 413, "title": "南开大学津南校区学生公寓(二期)项目全过程造价咨询服务", "pubDate": "2026-05-06", "source": "中国政府采购网", "link": "https://www.chinamae.com/purchases/dab8115d40184342c844c6570919d430.html", "keywords": ["全过程造价咨询", "高校建设", "学生公寓", "造价管理"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "180万元（最高限价120万元）", "region": "天津", "description": "地区：天津南开区；采购单位：南开大学；项目编号：NK2026F036；服务内容：招标及合同签订阶段、施工阶段、竣工结算阶段全过程工程造价咨询及管理；开标时间：2026年5月27日；专门面向中小企业采购"}, {"id": 400, "title": "天津出入境边防检查总站考勤系统建设项目竞争性磋商公告", "pubDate": "2026-05-01", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/", "keywords": ["招标代理", "项目管理", "考勤系统"], "collectedAt": "2026-05-09", "slot": "下午", "budget": "未知", "description": "地区：天津；采购单位：中华人民共和国天津出入境边防检查总站；采购内容：考勤系统建设", "region": "天津"}, {"id": 266, "title": "天津边检总站考勤系统建设项目竞争性磋商公告", "pubDate": "2026-05-01", "source": "中国政府采购网", "link": "https://www.ccgp.gov.cn/cggg/zygg/index.htm", "keywords": ["项目管理", "招标代理"], "collectedAt": "2026-05-04", "slot": "下午", "budget": "未知", "description": "地区：天津；采购单位：中华人民共和国天津出入境边防检查总站；项目名称：考勤系统建设项目", "region": "天津"}, {"id": 431, "title": "天津市滨海新区土地发展中心造价咨询服务公开招标", "pubDate": "2026-04-29", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202604/t20260429_26484422.htm", "keywords": ["造价咨询", "土地开发", "行政管理", "框架协议", "滨海新区"], "collectedAt": "2026-05-12", "slot": "下午", "budget": "90万元（分6包，每包15万元）", "region": "天津", "description": "地区：天津滨海新区；采购单位：天津市滨海新区土地发展中心；项目编号：TJJH-2026-FW032；服务内容：土地业务和行政管理类项目造价咨询服务；分6个包，兼投不兼中；服务期限1年；开标时间：2026年5月20日；专门面向中小微企业"}, {"id": 415, "title": "天津市滨海新区土地发展中心造价咨询服务", "pubDate": "2026-04-29", "source": "天津市政府采购网", "link": "http://tjgp.cz.tj.gov.cn/portal/documentView.do?id=983950772&method=view", "keywords": ["造价咨询", "土地业务", "行政管理", "框架协议"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "90万元（分6包，每包15万元）", "region": "天津", "description": "地区：天津滨海新区；采购单位：天津市滨海新区土地发展中心；项目编号：TJJH-2026-FW032；服务内容：土地业务和行政管理类项目造价咨询服务；分6个包，每包15万元；服务期1年；开标时间：2026年5月20日；专门面向中小微企业采购"}, {"id": 414, "title": "廊坊经济技术开发区东部片区基础设施及配套工程(一期)全过程造价咨询", "pubDate": "2026-04-28", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202604/t20260428_26471144.htm", "keywords": ["全过程造价咨询", "基础设施", "市政工程", "配套工程"], "collectedAt": "2026-05-11", "slot": "晚间", "budget": "157.642万元", "region": "河北", "description": "地区：河北廊坊经济技术开发区；采购单位：廊坊经济技术开发区住房和城乡建设局；项目编号：Z1310002600802001；服务内容：道路及配套设施工程、厂站工程等全过程造价咨询；采用双盲评审；开标时间：2026年5月21日；专门面向中小企业采购"}, {"id": 382, "title": "廊坊经济技术开发区东部片区基础设施及配套工程(一期)全过程造价咨询公开招标公告", "pubDate": "2026-04-28", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202604/t20260428_26471144.htm", "keywords": ["全过程造价", "造价咨询", "基础设施"], "collectedAt": "2026-05-09", "slot": "上午", "budget": "157.642万元", "region": "河北", "description": "地区：河北廊坊；采购单位：廊坊经济技术开发区住房和城乡建设局；预算157.642万元；开标时间2026年5月21日"}, {"id": 23, "title": "天津市审计局协审（造价师）服务项目成交公告", "pubDate": "2026-04-20", "source": "天津市政府采购网", "link": "http://ccgp-tianjin.gov.cn/", "keywords": ["造价"], "collectedAt": "2026-04-21", "slot": "早间", "region": "天津"}, {"id": 20, "title": "天津市静海区团泊水库东围堤建设工程生态环境保护全过程咨询服务竞争性磋商公告", "pubDate": "2026-04-13", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202604/t20260413_26398296.htm", "keywords": ["全过程咨询"], "collectedAt": "2026-04-20", "slot": "下午", "region": "天津"}, {"id": 211, "title": "台湖镇选聘2026年度造价咨询公司公开招标公告", "pubDate": "2026-03-24", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260324_26307237.htm", "keywords": ["造价咨询", "全过程咨询"], "collectedAt": "2026-05-02", "slot": "上午", "budget": "419万元", "description": "地区：北京通州；采购单位：北京市通州区台湖镇人民政府；预算金额：419万元（分5个包，每包83.8万元）；采购方式：公开招标；服务内容：房屋建筑类、市政工程类、拆改移工程类、环境整治类、园林绿化类造价咨询服务；服务期：签订合同之日起一年；投标截止：2026-04-15 09:00", "region": "北京"}, {"id": 198, "title": "北京市通州区台湖镇选聘2026年度造价咨询公司公开招标公告", "pubDate": "2026-03-24", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260324_26307237.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-30", "slot": "晚间", "budget": "419万元", "description": "地区：北京通州；采购单位：台湖镇人民政府；采购5个包，每包83.8万元，包括房屋建筑类、市政工程类、拆改移工程类、环境整治类、园林绿化类", "region": "北京"}, {"id": 165, "title": "北京市通州区台湖镇选聘2026年度造价咨询公司公开招标公告", "pubDate": "2026-03-24", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260324_26307237.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-28", "slot": "上午", "budget": "419万元", "description": "地区：北京通州；采购单位：北京市通州区台湖镇人民政府；预算金额419万元（分5个包，每包83.8万元）；采购内容：房屋建筑类、市政工程类、拆改移工程类、环境整治类、园林绿化类造价咨询；服务期：一年；投标截止：2026-04-15 09:00", "region": "北京"}, {"id": 114, "title": "台湖镇选聘2026年度造价咨询公司公开招标公告", "pubDate": "2026-03-24", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260324_26307237.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-27", "slot": "上午", "description": "地区：北京通州；采购单位：台湖镇人民政府；选聘2026年度造价咨询公司", "region": "北京"}, {"id": 113, "title": "北京外交人员服务局2026年齐家园外交公寓10号楼改造工程造价咨询服务采购项目", "pubDate": "2026-03-20", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/gkzb/202603/t20260320_26296246.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-27", "slot": "上午", "description": "地区：北京；采购单位：北京外交人员服务局；服务内容：齐家园外交公寓10号楼改造工程造价咨询服务", "region": "北京"}, {"id": 49, "title": "北京师范大学昌平校园F区能源工程全过程跟踪审计服务采购项目", "pubDate": "2026-03-18", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/zygg/gkzb/202603/t20260318_26285258.htm", "keywords": ["全过程咨询", "造价咨询", "审计服务"], "collectedAt": "2026-04-23", "slot": "晚间", "description": "地区：北京；预算金额180万元；服务内容包括概算审核、招标控制价审核、过程结算审核、竣工结算审核；计划工期2026年4月至2029年6月；需驻场服务", "region": "北京"}, {"id": 178, "title": "天津经济技术开发区审计局2026年工程造价咨询及竣工决算服务项目公开招标公告", "pubDate": "2026-03-03", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202603/t20260303_26214798.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-29", "slot": "上午", "budget": "300万元", "description": "地区：天津滨海新区；采购单位：天津经济技术开发区审计局；项目编号：TJBHGP-TEDA-2026-002；分3个包，每包100万元；服务内容：工程造价咨询及竣工决算服务；服务期：2026-04-01至2027-03-31；开标时间：2026-03-26 09:30", "region": "天津"}, {"id": 272, "title": "河北雄安新区2026年财政投资评审造价咨询服务公开招标", "pubDate": "2026-01-21", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202601/t20260121_26097735.htm", "keywords": ["造价咨询"], "collectedAt": "2026-05-04", "slot": "下午", "budget": "2041万元", "description": "地区：河北雄安；采购单位：雄安新区财政投资评审中心；项目名称：2026年河北雄安新区财政投资评审造价咨询服务；预算金额：2041万元；服务内容：竣工结算评审", "region": "河北"}, {"id": 116, "title": "2026年河北雄安新区财政投资评审造价咨询服务公开招标公告", "pubDate": "2026-01-21", "source": "中国政府采购网", "link": "http://www.ccgp.gov.cn/cggg/dfgg/gkzb/202601/t20260121_26097735.htm", "keywords": ["造价咨询"], "collectedAt": "2026-04-27", "slot": "上午", "budget": "2041万元", "description": "地区：河北雄安；采购单位：雄安新区财政投资评审中心；预算金额2041万元（分5个包）；服务内容包括雄东片区、容西片区安置房项目竣工结算评审；截止时间：2026-02-11", "region": "河北"}]};
         
-        // ============================================
+        // 地区关键词白名单
+        const BEIJING_KEYWORDS = ['北京', '北京市', '北京地区', '京', '北京林业大学', '北京工业大学', 
+                                  '北京理工大学', '北京航空航天大学', '北京师范大学', '北京科技大学', 
+                                  '北京交通大学', '北京化工大学', '北京邮电大学', '北京中医药大学', 
+                                  '北京外国语大学', '北京协和医学院', '北京体育大学', '中央民族大学', 
+                                  '中国政法大学', '中国人民大学', '清华大学', '北京大学', '中科院', 
+                                  '中国科学院', '退休职工活动站'];
+        const TIANJIN_KEYWORDS = ['天津', '天津市', '天津地区', '津', '团泊', '泰达', '滨海', '天津港',
+                                  '天津大学', '南开大学', '天津医科大学', '天津师范大学', '天津工业大学'];
+        const HEBEI_KEYWORDS = ['河北', '河北省', '石家庄', '唐山', '保定', '廊坊', '秦皇岛', '邯郸', 
+                                '邢台', '张家口', '承德', '沧州', '衡水', '雄安', '雄安新区', '正定', 
+                                '辛集', '藁城', '晋州', '新乐', '鹿泉', '遵化', '迁安', '霸州', '三河', 
+                                '涿州', '定州', '安国', '高碑店', '泊头', '任丘', '黄骅', '河间', 
+                                '冀州', '深州', '南宫', '沙河', '武安', '南宫市', '河北大学', '燕山大学'];
+        
+        // 标准化地区提取函数
+        function extractRegion(announcement) {
+            const title = announcement.title || '';
+            const desc = announcement.description || '';
+            const source = announcement.source || '';
+            const regionField = announcement.region || '';
+            
+            // 优先级1: region字段（已标准化）
+            if (regionField && ['北京', '天津', '河北', '其他'].includes(regionField)) {
+                return regionField;
+            }
+            
+            // 优先级2: 标题中的关键词
+            for (const kw of BEIJING_KEYWORDS) {
+                if (title.includes(kw)) return '北京';
+            }
+            for (const kw of TIANJIN_KEYWORDS) {
+                if (title.includes(kw)) return '天津';
+            }
+            for (const kw of HEBEI_KEYWORDS) {
+                if (title.includes(kw)) return '河北';
+            }
+            
+            // 优先级3: 描述中的关键词
+            for (const kw of BEIJING_KEYWORDS) {
+                if (desc.includes(kw)) return '北京';
+            }
+            for (const kw of TIANJIN_KEYWORDS) {
+                if (desc.includes(kw)) return '天津';
+            }
+            for (const kw of HEBEI_KEYWORDS) {
+                if (desc.includes(kw)) return '河北';
+            }
+            
+            // 优先级4: 来源中的关键词
+            for (const kw of BEIJING_KEYWORDS) {
+                if (source.includes(kw)) return '北京';
+            }
+            for (const kw of TIANJIN_KEYWORDS) {
+                if (source.includes(kw)) return '天津';
+            }
+            for (const kw of HEBEI_KEYWORDS) {
+                if (source.includes(kw)) return '河北';
+            }
+            
+            return '其他';
+        }
+        
         // 全局变量
-        // ============================================
-        
-        // 初始化filteredData为全部数据，防止首次加载空白
         let filteredData = [];
         let currentPage = 1;
         const pageSize = 20;
         
-        // ============================================
-        // 数据校验与规范化函数
-        // ============================================
-        
-        /**
-         * 规范化source字段，确保只在白名单内
-         * 如果source不在白名单中，根据内容智能匹配
-         */
-        function normalizeSource(source) {
-            // 如果已经是白名单中的，直接返回
-            if (ALLOWED_SOURCES.includes(source)) {
-                return source;
-            }
-            
-            // 根据source内容智能匹配白名单
-            const sourceLower = (source || '').toLowerCase();
-            
-            if (sourceLower.includes('天津') && sourceLower.includes('政府采购')) {
-                return '天津市政府采购网';
-            }
-            if (sourceLower.includes('天津')) {
-                return '天津市公共资源交易平台';
-            }
-            if (sourceLower.includes('招标投标公共服务')) {
-                return '中国招标投标公共服务平台';
-            }
-            
-            // 默认归到中国政府采购网（最通用的来源）
-            return '中国政府采购网';
-        }
-        
-        /**
-         * 对所有公告数据进行source字段规范化
-         */
-        function normalizeAllSources() {
-            console.log('[系统] 开始规范化source字段...');
-            let normalizedCount = 0;
-            
-            EMBEDDED_DATA.announcements.forEach(item => {
-                const originalSource = item.source;
-                const newSource = normalizeSource(item.source);
-                if (originalSource !== newSource) {
-                    normalizedCount++;
-                    console.log(`[规范化] ${originalSource} -> ${newSource}`);
-                    item.source = newSource;
-                }
-            });
-            
-            console.log(`[系统] source字段规范化完成，共处理 ${normalizedCount} 条记录`);
-        }
-        
-        /**
-         * 验证所有source是否符合白名单
-         */
-        function validateSources() {
-            const invalidSources = EMBEDDED_DATA.announcements.filter(item => !ALLOWED_SOURCES.includes(item.source));
-            if (invalidSources.length > 0) {
-                console.error('[警告] 发现非法source:', invalidSources.map(i => i.source));
-                return false;
-            }
-            console.log('[验证] 所有source字段均符合白名单要求');
-            return true;
-        }
-        
-        // ============================================
-        // 初始化函数
-        // ============================================
-        
-        // 页面DOM完全加载后初始化
+        // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('[系统] DOM加载完成，开始初始化...');
-            
-            try {
-                // 第一步：规范化数据
-                normalizeAllSources();
-                validateSources();
-                
-                // 第二步：初始化filteredData为全部数据（关键修复！）
-                filteredData = [...EMBEDDED_DATA.announcements];
-                console.log(`[初始化] filteredData已设置为全部数据，共 ${filteredData.length} 条`);
-                
-                // 第三步：初始化各个模块
-                document.getElementById('lastUpdate').textContent = EMBEDDED_DATA.lastUpdate;
-                initStats();
-                initFilters();
-                initSearch();
-                
-                // 第四步：渲染列表
-                renderList();
-                
-                console.log('[系统] 初始化完成！');
-                showToast('系统初始化完成');
-            } catch (error) {
-                console.error('[错误] 初始化失败:', error);
-                showToast('系统初始化异常，请刷新重试');
-            }
+            initStats();
+            initFilters();
+            initSearch();
+            renderList();
         });
         
-        // ============================================
-        // 统计数据初始化
-        // ============================================
-        
+        // 初始化统计数据
         function initStats() {
             const announcements = EMBEDDED_DATA.announcements;
             const today = new Date().toISOString().split('T')[0];
@@ -440,29 +404,30 @@
             const todayCount = announcements.filter(a => a.pubDate === today || a.collectedAt === today).length;
             document.getElementById('todayCount').textContent = todayCount;
             
-            // 天津地区
-            const tjCount = announcements.filter(a => {
-                const desc = (a.description || '') + (a.region || '');
-                return desc.includes('天津');
-            }).length;
+            // 北京地区 - 新增
+            const bjCount = announcements.filter(a => extractRegion(a) === '北京').length;
+            document.getElementById('bjCount').textContent = bjCount;
+            
+            // 天津地区 - 使用标准化函数
+            const tjCount = announcements.filter(a => extractRegion(a) === '天津').length;
             document.getElementById('tjCount').textContent = tjCount;
             
-            // 河北地区
-            const hbCount = announcements.filter(a => {
-                const desc = (a.description || '') + (a.region || '');
-                return desc.includes('河北') || desc.includes('石家庄') || desc.includes('保定') || desc.includes('秦皇岛');
-            }).length;
+            // 河北地区 - 使用标准化函数
+            const hbCount = announcements.filter(a => extractRegion(a) === '河北').length;
             document.getElementById('hbCount').textContent = hbCount;
             
-            console.log('[统计] 统计数据计算完成');
+            // 调试信息输出到控制台
+            console.log('=== 地区统计调试信息 ===');
+            console.log('北京地区数量:', bjCount);
+            console.log('天津地区数量:', tjCount);
+            console.log('河北地区数量:', hbCount);
+            console.log('总计:', bjCount + tjCount + hbCount);
+            console.log('========================');
         }
         
-        // ============================================
-        // 筛选器初始化
-        // ============================================
-        
+        // 初始化筛选器
         function initFilters() {
-            // 日期筛选 - 从数据动态生成
+            // 日期筛选
             const dates = [...new Set(EMBEDDED_DATA.announcements.map(a => a.pubDate))].sort().reverse();
             const dateSelect = document.getElementById('filterDate');
             dates.forEach(date => {
@@ -472,37 +437,18 @@
                 dateSelect.appendChild(option);
             });
             
-            // 来源筛选 - 只使用白名单（关键修复！）
-            const sourceSelect = document.getElementById('filterSource');
-            // 清空现有选项（除了第一个"全部来源"）
-            while (sourceSelect.options.length > 1) {
-                sourceSelect.remove(1);
-            }
-            // 只添加白名单中的来源
-            ALLOWED_SOURCES.forEach(source => {
-                const option = document.createElement('option');
-                option.value = source;
-                option.textContent = source;
-                sourceSelect.appendChild(option);
-            });
-            
-            console.log('[筛选器] 来源筛选器已设置为白名单模式:', ALLOWED_SOURCES);
-            
             // 添加事件监听
             ['filterDate', 'filterKeyword', 'filterSource', 'filterRegion'].forEach(id => {
                 document.getElementById(id).addEventListener('change', filterData);
             });
         }
         
-        // ============================================
-        // 搜索初始化
-        // ============================================
-        
+        // 初始化搜索
         function initSearch() {
             document.getElementById('searchInput').addEventListener('input', debounce(filterData, 300));
         }
         
-        // 防抖函数
+        // 防抖
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -515,18 +461,13 @@
             };
         }
         
-        // ============================================
-        // 筛选数据函数
-        // ============================================
-        
+        // 筛选数据
         function filterData() {
             const date = document.getElementById('filterDate').value;
             const keyword = document.getElementById('filterKeyword').value;
             const source = document.getElementById('filterSource').value;
             const region = document.getElementById('filterRegion').value;
             const search = document.getElementById('searchInput').value.toLowerCase();
-            
-            console.log(`[筛选] 条件: 日期=${date || '全部'}, 关键词=${keyword || '全部'}, 来源=${source || '全部'}, 地区=${region || '全部'}, 搜索=${search || '无'}`);
             
             filteredData = EMBEDDED_DATA.announcements.filter(item => {
                 // 日期筛选
@@ -535,13 +476,13 @@
                 // 关键词筛选
                 if (keyword && !item.keywords.some(k => k.includes(keyword) || keyword.includes(k))) return false;
                 
-                // 来源筛选 - 严格匹配白名单（关键修复！）
-                if (source && item.source !== source) return false;
+                // 来源筛选
+                if (source && !item.source.includes(source)) return false;
                 
-                // 地区筛选
+                // 地区筛选 - 使用标准化函数
                 if (region) {
-                    const desc = (item.description || '') + (item.region || '');
-                    if (!desc.includes(region)) return false;
+                    const itemRegion = extractRegion(item);
+                    if (itemRegion !== region) return false;
                 }
                 
                 // 搜索筛选
@@ -550,16 +491,11 @@
                 return true;
             });
             
-            console.log(`[筛选] 结果: ${filteredData.length} 条记录`);
-            
             currentPage = 1;
             renderList();
         }
         
-        // ============================================
         // 渲染列表
-        // ============================================
-        
         function renderList() {
             const listContainer = document.getElementById('announcementList');
             const start = (currentPage - 1) * pageSize;
@@ -567,46 +503,33 @@
             const pageData = filteredData.slice(start, end);
             
             // 更新结果数量
-            document.getElementById('resultCount').textContent = `共 ${filteredData.length} 条公告`;
+            document.getElementById('resultCount').textContent = '共 ' + filteredData.length + ' 条公告';
             
-            // 容错处理：空数据显示友好提示
             if (pageData.length === 0) {
-                listContainer.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📭</div>
-                        <p>暂无符合条件的公告</p>
-                        <p style="font-size: 12px; margin-top: 8px;">请尝试调整筛选条件</p>
-                    </div>
-                `;
+                listContainer.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>暂无公告</p></div>';
                 document.getElementById('pagination').innerHTML = '';
                 return;
             }
             
-            // 渲染公告列表
             listContainer.innerHTML = pageData.map((item, index) => {
-                const keywordsHtml = item.keywords ? item.keywords.map(k => `<span class="meta-tag keyword">${k}</span>`).join('') : '';
-                const sourceHtml = item.source ? `<span class="meta-tag source">${item.source}</span>` : '';
-                const regionMatch = (item.description || '').match(/地区：([^；]+)/);
-                const regionHtml = regionMatch ? `<span class="meta-tag region">${regionMatch[1]}</span>` : '';
+                const keywordsHtml = item.keywords ? item.keywords.map(k => '<span class="meta-tag keyword">' + k + '</span>').join('') : '';
+                const sourceHtml = item.source ? '<span class="meta-tag source">' + item.source + '</span>' : '';
+                const regionVal = extractRegion(item);
+                const regionHtml = '<span class="meta-tag region">' + regionVal + '</span>';
                 
-                return `
-                    <div class="announcement-item" onclick="showDetail(${start + index})">
-                        <div class="item-header">
-                            <div class="item-title">${item.title}</div>
-                            <div class="item-date">${item.pubDate}</div>
-                        </div>
-                        <div class="item-meta">${sourceHtml}${keywordsHtml}${regionHtml}</div>
-                    </div>
-                `;
+                return '<div class="announcement-item" onclick="showDetail(' + (start + index) + ')">' +
+                    '<div class="item-header">' +
+                        '<div class="item-title">' + item.title + '</div>' +
+                        '<div class="item-date">' + item.pubDate + '</div>' +
+                    '</div>' +
+                    '<div class="item-meta">' + sourceHtml + keywordsHtml + regionHtml + '</div>' +
+                '</div>';
             }).join('');
             
             renderPagination();
         }
         
-        // ============================================
         // 渲染分页
-        // ============================================
-        
         function renderPagination() {
             const totalPages = Math.ceil(filteredData.length / pageSize);
             const pagination = document.getElementById('pagination');
@@ -619,7 +542,7 @@
             let html = '';
             
             // 上一页
-            html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">上一页</button>`;
+            html += '<button ' + (currentPage === 1 ? 'disabled' : '') + ' onclick="goToPage(' + (currentPage - 1) + ')">上一页</button>';
             
             // 页码
             const maxVisible = 5;
@@ -631,82 +554,74 @@
             }
             
             if (startPage > 1) {
-                html += `<button onclick="goToPage(1)">1</button>`;
-                if (startPage > 2) html += `<button disabled>...</button>`;
+                html += '<button onclick="goToPage(1)">1</button>';
+                if (startPage > 2) html += '<button disabled>...</button>';
             }
             
             for (let i = startPage; i <= endPage; i++) {
-                html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                html += '<button class="' + (i === currentPage ? 'active' : '') + '" onclick="goToPage(' + i + ')">' + i + '</button>';
             }
             
             if (endPage < totalPages) {
-                if (endPage < totalPages - 1) html += `<button disabled>...</button>`;
-                html += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
+                if (endPage < totalPages - 1) html += '<button disabled>...</button>';
+                html += '<button onclick="goToPage(' + totalPages + ')">' + totalPages + '</button>';
             }
             
             // 下一页
-            html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">下一页</button>`;
+            html += '<button ' + (currentPage === totalPages ? 'disabled' : '') + ' onclick="goToPage(' + (currentPage + 1) + ')">下一页</button>';
             
             pagination.innerHTML = html;
         }
         
-        // ============================================
-        // 页面跳转
-        // ============================================
-        
+        // 跳转页面
         function goToPage(page) {
             currentPage = page;
             renderList();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
-        // ============================================
         // 显示详情
-        // ============================================
-        
         function showDetail(index) {
             const item = filteredData[index];
-            if (!item) {
-                console.error('[详情] 未找到对应公告');
-                return;
-            }
+            if (!item) return;
             
             document.getElementById('modalTitle').textContent = item.title;
             
             let body = '';
             
             if (item.pubDate) {
-                body += `<div class="detail-section"><h4>发布日期</h4><div class="detail-content">${item.pubDate}</div></div>`;
+                body += '<div class="detail-section"><h4>发布日期</h4><div class="detail-content">' + item.pubDate + '</div></div>';
             }
             
             if (item.source) {
-                body += `<div class="detail-section"><h4>来源</h4><div class="detail-content">${item.source}</div></div>`;
+                body += '<div class="detail-section"><h4>来源</h4><div class="detail-content">' + item.source + '</div></div>';
             }
             
+            // 显示标准化地区
+            const regionVal = extractRegion(item);
+            body += '<div class="detail-section"><h4>地区</h4><div class="detail-content">' + regionVal + '</div></div>';
+            
             if (item.keywords && item.keywords.length > 0) {
-                body += `<div class="detail-section"><h4>关键词</h4><div class="detail-content">${item.keywords.join('、')}</div></div>`;
+                body += '<div class="detail-section"><h4>关键词</h4><div class="detail-content">' + item.keywords.join('、') + '</div></div>';
             }
             
             if (item.description) {
-                body += `<div class="detail-section"><h4>详情描述</h4><div class="detail-content">${item.description}</div></div>`;
+                body += '<div class="detail-section"><h4>详情描述</h4><div class="detail-content">' + item.description + '</div></div>';
             }
             
             if (item.budget && item.budget !== '未知') {
-                body += `<div class="detail-section"><h4>预算金额</h4><div class="detail-content">${item.budget}</div></div>`;
+                body += '<div class="detail-section"><h4>预算金额</h4><div class="detail-content">' + item.budget + '</div></div>';
             }
             
             if (item.link && item.link.startsWith('http')) {
-                body += `<div class="detail-section"><h4>原文链接</h4><div class="detail-content"><a href="${item.link}" target="_blank" class="detail-link">${item.link}</a></div></div>`;
+                body += '<div class="detail-section"><h4>原文链接</h4><div class="detail-content"><a href="' + item.link + '" target="_blank" class="detail-link">' + item.link + '</a></div></div>';
             }
             
             document.getElementById('modalBody').innerHTML = body;
             document.getElementById('modalOverlay').classList.add('active');
         }
         
-        // ============================================
         // 关闭模态框
-        // ============================================
-        
         function closeModal() {
             document.getElementById('modalOverlay').classList.remove('active');
         }
@@ -716,35 +631,26 @@
             if (e.key === 'Escape') closeModal();
         });
         
-        // ============================================
         // 重置筛选
-        // ============================================
-        
         function resetFilters() {
             document.getElementById('filterDate').value = '';
             document.getElementById('filterKeyword').value = '';
             document.getElementById('filterSource').value = '';
             document.getElementById('filterRegion').value = '';
             document.getElementById('searchInput').value = '';
-            
-            // 重置为全部数据
             filteredData = [...EMBEDDED_DATA.announcements];
             currentPage = 1;
             renderList();
-            
-            console.log('[重置] 筛选条件已重置，显示全部数据');
             showToast('筛选已重置');
         }
         
-        // ============================================
         // 导出数据
-        // ============================================
-        
         function exportData() {
             const exportData = filteredData.map((item, index) => ({
                 '序号': index + 1,
                 '发布日期': item.pubDate || '',
                 '标题': item.title || '',
+                '地区': extractRegion(item),
                 '来源': item.source || '',
                 '关键词': item.keywords ? item.keywords.join(', ') : '',
                 '详情': item.description || '',
@@ -755,24 +661,20 @@
             const headers = Object.keys(exportData[0]);
             const csvContent = [
                 headers.join(','),
-                ...exportData.map(row => headers.map(h => `"${(row[h] || '').replace(/"/g, '""')}"`).join(','))
+                ...exportData.map(row => headers.map(h => '"' + (row[h] || '').replace(/"/g, '""') + '"').join(','))
             ].join('\n');
             
             // 下载
             const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `招标公告_${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = '招标公告_' + new Date().toISOString().split('T')[0] + '.csv';
             link.click();
             
-            console.log(`[导出] 已导出 ${filteredData.length} 条数据`);
             showToast('数据已导出');
         }
         
-        // ============================================
-        // Toast提示
-        // ============================================
-        
+        // 显示提示
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
