@@ -531,7 +531,7 @@ html_content = '''<!DOCTYPE html>
                 if (keyword && !item.keywords.some(k => k.includes(keyword) || keyword.includes(k))) return false;
                 
                 // 来源筛选
-                if (source && !item.source.includes(source)) return false;
+                if (source && item.source !== source) return false;  // 使用严格相等（数据已规范化）
                 
                 // 地区筛选 - 使用标准化函数
                 if (region) {
@@ -552,11 +552,7 @@ html_content = '''<!DOCTYPE html>
         // 渲染列表
         function renderList() {
             const listContainer = document.getElementById('announcementList');
-            // 终极兜底：如果filteredData为空，自动从EMBEDDED_DATA恢复
-            if (filteredData.length === 0 && typeof EMBEDDED_DATA !== "undefined" && EMBEDDED_DATA.announcements) {
-                console.warn("filteredData为空，自动从EMBEDDED_DATA恢复");
-                filteredData = [...EMBEDDED_DATA.announcements];
-            }
+            // 筛选结果为空时正常显示空状态（已移除兜底逻辑，避免筛选失效）
             const start = (currentPage - 1) * pageSize;
             const end = start + pageSize;
             const pageData = filteredData.slice(start, end);
