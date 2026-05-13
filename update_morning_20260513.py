@@ -7,6 +7,7 @@
 import json
 from datetime import datetime
 import os
+from source_normalizer import normalize_all_sources
 
 # 读取现有数据
 data_path = '/app/data/所有对话/主对话/bidding-announcements/data/announcements.json'
@@ -58,6 +59,9 @@ data['lastUpdate'] = datetime.now().strftime('%Y-%m-%d %H:%M')
 
 # 按日期排序（最新的在前）
 data['announcements'].sort(key=lambda x: (x['pubDate'], x['id']), reverse=True)
+
+# 规范化所有source字段
+normalize_all_sources(data['announcements'])
 
 # 保存JSON
 with open(data_path, 'w', encoding='utf-8') as f:
